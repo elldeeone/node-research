@@ -1,0 +1,41 @@
+{
+  "run_id": "run-003-synced-stress-pruning-followup-2026-03-30T06-41-10Z",
+  "run_state": "synced-stress-pruning",
+  "collector": "codex",
+  "started_at_utc": "2026-03-30T06:41:10Z",
+  "ended_at_utc": "2026-03-30T10:05:19Z",
+  "node": {
+    "version": "unknown",
+    "commit": "035e9151",
+    "network": "mainnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1"
+    ]
+  },
+  "host": {
+    "provider": "hetzner-cloud",
+    "region": "hel1",
+    "instance_name": "node-perf-01",
+    "cpu_model": "unknown",
+    "vcpu": 8,
+    "memory_gib": 32,
+    "disk_type": "ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 240,
+    "os": "ubuntu-24.04"
+  },
+  "load": {
+    "source": "kaspadrome",
+    "traffic_shape": "cycle/burst churn",
+    "payload_profile": "unknown",
+    "estimated_tps": null,
+    "estimated_bps": 10,
+    "notes": "Run started after pruning point movement was already logged at 2026-03-30T06:35:24Z; no header/block pruning line observed yet at run start."
+  },
+  "notes": "Live follow-up run with full sidecars: host, rpc, iostat, rocksdb log scrape, log tap. Wrapped after boost-funded phase completed. Active header/block pruning observed from 2026-03-30T06:42:37Z to 2026-03-30T06:50:22Z; boost started after prune completed."
+}

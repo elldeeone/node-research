@@ -1,0 +1,42 @@
+{
+  "run_id": "run-007-devnet-synced-stress-pruning-2026-04-04T12-08-48Z",
+  "run_state": "synced-stress-pruning",
+  "collector": "operator-kit",
+  "started_at_utc": "2026-04-04T20:17:50Z",
+  "ended_at_utc": "2026-04-05T20:07:09Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "unknown",
+    "network": "devnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1",
+      "--loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug"
+    ]
+  },
+  "host": {
+    "provider": "homelab",
+    "region": "gmk",
+    "instance_name": "gmk-nucbox-g5",
+    "cpu_model": "Intel(R) N97",
+    "vcpu": 4,
+    "memory_gib": 11.43,
+    "disk_type": "local-ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 465.88,
+    "os": "Ubuntu 24.04.3 LTS"
+  },
+  "load": {
+    "source": "devnet",
+    "traffic_shape": "sustained synthetic devnet load",
+    "payload_profile": "unknown",
+    "estimated_tps": 3000.0,
+    "estimated_bps": 10.0,
+    "notes": ""
+  },
+  "notes": "fresh rerun; peer 204.168.218.47:16611; run-007; intel-n97 4c/4t 12g ram auto-rolled from run-007-devnet-ibd-2026-04-04T12-08-48Z on pruning_start at 2026-04-04T20:17:48.467+00:00"
+}

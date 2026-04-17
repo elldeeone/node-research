@@ -1,0 +1,8 @@
+timestamp_utc,event_type,notes
+2026-03-30T06:41:10Z,synced_start,auto: first successful RPC sample was synced
+2026-03-30T06:42:37Z,pruning_start,manual: header/block pruning traversal started
+2026-03-30T06:44:42Z,boost_countdown_start,countdown already active when observed; funding txid f0878499d7a9d881df1de190a541dba2f207f3b47f6c17086bb80481938eff36; amount 100 KAS
+2026-03-30T06:50:22Z,pruning_end,manual: header/block pruning completed
+2026-03-30T06:51:42Z,boost_expected_start,estimated from user-reported countdown
+2026-03-30T06:51:56Z,boost_start,node-observed jump: 1888.51 u-tps; mempool 11809 ready
+2026-03-30T10:02:08Z,boost_end,node-observed return to cycle range: 407.44 u-tps; mempool 508 ready; kaspadrome cycles 10m boost / 15m normal until boost funds exhausted

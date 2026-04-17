@@ -1,0 +1,42 @@
+{
+  "run_id": "run-008b-devnet-leaf2-synced-downstream-2026-04-07T23-41-55Z",
+  "run_state": "synced-downstream",
+  "collector": "operator-kit",
+  "started_at_utc": "2026-04-08T01:58:04Z",
+  "ended_at_utc": "2026-04-08T02:14:39Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "dac7407e7924e31983aa72a8357967b1e2d8d93a",
+    "network": "devnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1",
+      "--loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug"
+    ]
+  },
+  "host": {
+    "provider": "hetzner",
+    "region": "hel1",
+    "instance_name": "node-perf-devnet-03",
+    "cpu_model": "AMD EPYC-Genoa Processor",
+    "vcpu": 8,
+    "memory_gib": 15.24,
+    "disk_type": "local-ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 300.17,
+    "os": "Ubuntu 24.04.3 LTS"
+  },
+  "load": {
+    "source": "devnet",
+    "traffic_shape": "cold downstream IBD via relay node while leaf1 remains synced",
+    "payload_profile": "unknown",
+    "estimated_tps": 3000.0,
+    "estimated_bps": 10.0,
+    "notes": ""
+  },
+  "notes": "leaf2 cold IBD from relay 204.168.160.165:16611 while leaf1 stays synced; direct bootstrap blocked; run-008b auto-rolled from run-008b-devnet-leaf2-ibd-2026-04-07T23-41-55Z on sync at 2026-04-08T01:57:05Z"
+}

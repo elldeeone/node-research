@@ -1,0 +1,4 @@
+timestamp_utc,event_type,notes
+2026-04-08T05:35:48.755+00:00,ibd_end,auto: detected IBD completion in kaspad log
+2026-04-08T05:35:48.869+00:00,ibd_start,auto: detected IBD start in kaspad log
+2026-04-08T05:45:12Z,synced_start,auto: detected node becoming synced from RPC samples

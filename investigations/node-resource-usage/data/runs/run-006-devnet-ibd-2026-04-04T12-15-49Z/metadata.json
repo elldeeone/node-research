@@ -1,0 +1,42 @@
+{
+  "run_id": "run-006-devnet-ibd-2026-04-04T12-15-49Z",
+  "run_state": "ibd",
+  "collector": "operator-kit",
+  "started_at_utc": "2026-04-04T12:16:11Z",
+  "ended_at_utc": "2026-04-04T18:43:23Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "unknown",
+    "network": "devnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1",
+      "--loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug"
+    ]
+  },
+  "host": {
+    "provider": "proxmox",
+    "region": "pve2",
+    "instance_name": "kaspa-devnet",
+    "cpu_model": "AMD Ryzen 7 5800X 8-Core Processor",
+    "vcpu": 12,
+    "memory_gib": 25.44,
+    "disk_type": "local-ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 318.62,
+    "os": "Ubuntu 24.04.3 LTS"
+  },
+  "load": {
+    "source": "devnet",
+    "traffic_shape": "sustained synthetic devnet load",
+    "payload_profile": "unknown",
+    "estimated_tps": 3000.0,
+    "estimated_bps": 10.0,
+    "notes": ""
+  },
+  "notes": "fresh rerun; peer 204.168.218.47:16611; run-006"
+}

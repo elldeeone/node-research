@@ -1,0 +1,109 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1000" fill="#F3EEE3"/>
+  <rect x="24" y="24" width="1552" height="952" rx="28" fill="#FAF7F0" stroke="#D9D0C2" stroke-width="2"/>
+
+  <!-- Badge -->
+  <rect x="72" y="64" width="280" height="38" rx="19" fill="#355E73"/>
+  <text x="212" y="89" fill="#F8F4EC" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="700" text-anchor="middle">Relay Sync Comparison</text>
+
+  <!-- Title -->
+  <text x="72" y="162" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700">Relay-fed IBD is slower, but still controlled</text>
+  <text x="72" y="198" fill="#5D554C" font-family="Georgia, 'Times New Roman', serif" font-size="17">Healthy Hetzner CPX42 relay under 3K TPS background load. Direct bootstrap is the baseline.</text>
+
+  <!-- Chart panel -->
+  <rect x="72" y="240" width="980" height="668" rx="24" fill="#FFFDF8" stroke="#D9D0C2" stroke-width="1.5"/>
+  <!-- Takeaway panel -->
+  <rect x="1084" y="240" width="444" height="668" rx="24" fill="#FFFDF8" stroke="#D9D0C2" stroke-width="1.5"/>
+
+  <!-- Chart header -->
+  <text x="112" y="284" fill="#51483F" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="1.4">TIME TO SYNC</text>
+  <text x="112" y="304" fill="#8B8073" font-family="Arial, Helvetica, sans-serif" font-size="12">Direct bootstrap vs relay-fed IBD</text>
+  <text x="934" y="284" fill="#8B8073" font-family="Arial, Helvetica, sans-serif" font-size="13" text-anchor="end">seconds</text>
+
+  <!-- Grid lines -->
+  <line x1="394" y1="318" x2="394" y2="855" stroke="#E4DDD1" stroke-width="1"/>
+  <line x1="550" y1="318" x2="550" y2="855" stroke="#EEE8DC" stroke-width="1"/>
+  <line x1="706" y1="318" x2="706" y2="855" stroke="#EEE8DC" stroke-width="1"/>
+  <line x1="862" y1="318" x2="862" y2="855" stroke="#EEE8DC" stroke-width="1"/>
+
+  <!-- Axis labels -->
+  <text x="394" y="880" fill="#8B8073" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">0</text>
+  <text x="550" y="880" fill="#8B8073" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">3000</text>
+  <text x="706" y="880" fill="#8B8073" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">6000</text>
+  <text x="862" y="880" fill="#8B8073" font-family="Arial, Helvetica, sans-serif" font-size="12" text-anchor="middle">9000</text>
+
+  <!-- Row 1: Direct bootstrap -->
+  <text x="112" y="356" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700">Run 5 direct bootstrap</text>
+  <text x="112" y="376" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Reference baseline on the same healthy VPS</text>
+  <rect x="394" y="342" width="265" height="30" rx="15" fill="#355E73"/>
+  <text x="670" y="362" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">5097s</text>
+  <text x="670" y="380" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="12">1.00x baseline</text>
+
+  <!-- Row 2: 8a -->
+  <text x="112" y="440" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700">8a relay - 1 cold downstream</text>
+  <text x="112" y="460" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Relay serving one full downstream sync</text>
+  <rect x="394" y="426" width="458" height="30" rx="15" fill="#4052C8"/>
+  <text x="862" y="446" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">8805s</text>
+  <text x="862" y="464" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="12">1.73x slower</text>
+
+  <!-- Row 3: 8b -->
+  <text x="112" y="524" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700">8b relay - 1 warm + 1 cold</text>
+  <text x="112" y="544" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Heavier again, but not a clean 2x jump</text>
+  <rect x="394" y="510" width="422" height="30" rx="15" fill="#5869D7"/>
+  <text x="826" y="530" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">8110s</text>
+  <text x="826" y="548" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="12">1.59x slower</text>
+
+  <!-- Row 4: 8c cohort average -->
+  <text x="112" y="608" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700">8c cohort average</text>
+  <text x="112" y="628" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Average across 8 simultaneous cold downstream nodes</text>
+  <rect x="394" y="594" width="478" height="30" rx="15" fill="#7A56D6"/>
+  <text x="882" y="614" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">9201s</text>
+  <text x="882" y="632" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="12">1.81x slower</text>
+
+  <!-- Row 5: 8c first node -->
+  <text x="112" y="692" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700">8c first node</text>
+  <text x="112" y="712" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Fastest member of the 8c cohort</text>
+  <rect x="394" y="678" width="464" height="30" rx="15" fill="#9267E2"/>
+  <text x="868" y="698" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">8918s</text>
+  <text x="868" y="716" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="12">1.75x slower</text>
+
+  <!-- Row 6: 8c last node -->
+  <text x="112" y="776" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="17" font-weight="700">8c last node</text>
+  <text x="112" y="796" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Slowest member of the 8c cohort</text>
+  <rect x="394" y="762" width="497" height="30" rx="15" fill="#B081EF"/>
+  <text x="901" y="782" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700">9566s</text>
+  <text x="901" y="800" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="12">1.88x slower</text>
+
+  <!-- Right panel: 8C Takeaway -->
+  <rect x="1116" y="276" width="172" height="32" rx="16" fill="#4350D0"/>
+  <text x="1202" y="297" fill="#F8F4EC" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="1" text-anchor="middle">8C TAKEAWAY</text>
+
+  <text x="1116" y="358" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700">The slowdown is real.</text>
+  <text x="1116" y="392" fill="#231F1A" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700">The collapse wasn&apos;t.</text>
+
+  <text x="1116" y="440" fill="#5D554C" font-family="Georgia, 'Times New Roman', serif" font-size="16">Even with 8 simultaneous downstream</text>
+  <text x="1116" y="464" fill="#5D554C" font-family="Georgia, 'Times New Roman', serif" font-size="16">syncs, the healthy relay stayed composed.</text>
+
+  <!-- Info cards -->
+  <rect x="1116" y="496" width="380" height="80" rx="18" fill="#F4F0E6" stroke="#E0D7C8" stroke-width="1"/>
+  <text x="1142" y="524" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700">25.5h continuous run</text>
+  <text x="1142" y="546" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Served all 8 downstream nodes through</text>
+  <text x="1142" y="564" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">the full 8c sync window.</text>
+
+  <rect x="1116" y="592" width="380" height="80" rx="18" fill="#F4F0E6" stroke="#E0D7C8" stroke-width="1"/>
+  <text x="1142" y="620" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700">2 full prune windows</text>
+  <text x="1142" y="642" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Stayed healthy while serving peers</text>
+  <text x="1142" y="660" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">and moving through pruning.</text>
+
+  <rect x="1116" y="688" width="380" height="168" rx="18" fill="#F4F0E6" stroke="#E0D7C8" stroke-width="1"/>
+  <text x="1142" y="718" fill="#231F1A" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700">No failure signatures seen in 8c</text>
+  <text x="1142" y="752" fill="#355E73" font-family="Arial, Helvetica, sans-serif" font-size="14">- no OOM</text>
+  <text x="1142" y="778" fill="#355E73" font-family="Arial, Helvetica, sans-serif" font-size="14">- no loss of sync</text>
+  <text x="1142" y="804" fill="#355E73" font-family="Arial, Helvetica, sans-serif" font-size="14">- no peer collapse</text>
+  <text x="1142" y="830" fill="#355E73" font-family="Arial, Helvetica, sans-serif" font-size="14">- no storage-failure shape</text>
+  <text x="1158" y="848" fill="#355E73" font-family="Arial, Helvetica, sans-serif" font-size="14">on weaker boxes</text>
+
+  <!-- Footer -->
+  <text x="72" y="940" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">Read of the data: relay-serving adds real load, but on healthy NVMe-backed hardware it showed up much more as</text>
+  <text x="72" y="960" fill="#6A6158" font-family="Arial, Helvetica, sans-serif" font-size="13">read/serve/CPU/RSS pressure than catastrophic write-path collapse.</text>
+</svg>

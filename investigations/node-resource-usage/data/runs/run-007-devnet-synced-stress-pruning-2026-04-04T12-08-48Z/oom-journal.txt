@@ -1,0 +1,168 @@
+Apr 05 20:00:08 gmk systemd[1]: Starting sysstat-collect.service - system activity accounting tool...
+Apr 05 20:00:08 gmk systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 05 20:00:08 gmk systemd[1]: Finished sysstat-collect.service - system activity accounting tool.
+Apr 05 20:05:01 gmk CRON[194046]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+Apr 05 20:05:01 gmk CRON[194047]: (root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)
+Apr 05 20:05:01 gmk CRON[194046]: pam_unix(cron:session): session closed for user root
+Apr 05 20:07:07 gmk kernel: Purging GPU memory, 0 pages freed, 0 pages still pinned, 225 pages left available.
+Apr 05 20:07:07 gmk kernel: tokio-runtime-w invoked oom-killer: gfp_mask=0x140cca(GFP_HIGHUSER_MOVABLE|__GFP_COMP), order=0, oom_score_adj=0
+Apr 05 20:07:07 gmk kernel: CPU: 1 PID: 888912 Comm: tokio-runtime-w Not tainted 6.8.0-94-generic #96-Ubuntu
+Apr 05 20:07:07 gmk kernel: Hardware name: GMKtec NucBoxG5/GMKtec, BIOS G5_V1.01 05/21/2024
+Apr 05 20:07:07 gmk kernel: Call Trace:
+Apr 05 20:07:07 gmk kernel:  <TASK>
+Apr 05 20:07:07 gmk kernel:  dump_stack_lvl+0x76/0xa0
+Apr 05 20:07:07 gmk kernel:  dump_stack+0x10/0x20
+Apr 05 20:07:07 gmk kernel:  dump_header+0x49/0x210
+Apr 05 20:07:07 gmk kernel:  oom_kill_process+0x118/0x280
+Apr 05 20:07:07 gmk kernel:  ? oom_evaluate_task+0x143/0x1e0
+Apr 05 20:07:07 gmk kernel:  out_of_memory+0x103/0x350
+Apr 05 20:07:07 gmk kernel:  __alloc_pages_may_oom+0x10c/0x1d0
+Apr 05 20:07:07 gmk kernel:  __alloc_pages_slowpath.constprop.0+0x420/0x9f0
+Apr 05 20:07:07 gmk kernel:  __alloc_pages+0x31f/0x350
+Apr 05 20:07:07 gmk kernel:  alloc_pages_mpol+0x91/0x210
+Apr 05 20:07:07 gmk kernel:  alloc_pages+0x5b/0xd0
+Apr 05 20:07:07 gmk kernel:  folio_alloc+0x15/0x40
+Apr 05 20:07:07 gmk kernel:  filemap_alloc_folio+0xf4/0x100
+Apr 05 20:07:07 gmk kernel:  __filemap_get_folio+0x199/0x2e0
+Apr 05 20:07:07 gmk kernel:  filemap_fault+0x15c/0x8e0
+Apr 05 20:07:07 gmk kernel:  __do_fault+0x3a/0x190
+Apr 05 20:07:07 gmk kernel:  do_read_fault+0x133/0x200
+Apr 05 20:07:07 gmk kernel:  do_fault+0xf0/0x260
+Apr 05 20:07:07 gmk kernel:  handle_pte_fault+0x114/0x1d0
+Apr 05 20:07:07 gmk kernel:  __handle_mm_fault+0x654/0x800
+Apr 05 20:07:07 gmk kernel:  handle_mm_fault+0x18a/0x380
+Apr 05 20:07:07 gmk kernel:  do_user_addr_fault+0x169/0x670
+Apr 05 20:07:07 gmk kernel:  exc_page_fault+0x83/0x1b0
+Apr 05 20:07:07 gmk kernel:  asm_exc_page_fault+0x27/0x30
+Apr 05 20:07:07 gmk kernel: RIP: 0033:0x77a18b75e231
+Apr 05 20:07:07 gmk kernel: Code: Unable to access opcode bytes at 0x77a18b75e207.
+Apr 05 20:07:07 gmk kernel: RSP: 002b:000077a187bced18 EFLAGS: 00010246
+Apr 05 20:07:07 gmk kernel: RAX: 0000000000000000 RBX: 0000779de4031000 RCX: 0000000000000001
+Apr 05 20:07:07 gmk kernel: RDX: 0000000000000081 RSI: 000077a187fd55f8 RDI: 00000000000000ca
+Apr 05 20:07:07 gmk kernel: RBP: 0000000000000000 R08: 0000000078a337ba R09: 0000000000000001
+Apr 05 20:07:07 gmk kernel: R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
+Apr 05 20:07:07 gmk kernel: R13: 0000000000000000 R14: 000003fe26130180 R15: 000077a187fd55f8
+Apr 05 20:07:07 gmk kernel:  </TASK>
+Apr 05 20:07:07 gmk kernel: Mem-Info:
+Apr 05 20:07:07 gmk kernel: active_anon:811381 inactive_anon:2016730 isolated_anon:0
+                             active_file:0 inactive_file:119 isolated_file:0
+                             unevictable:9491 dirty:0 writeback:13
+                             slab_reclaimable:71342 slab_unreclaimable:26852
+                             mapped:2230 shmem:2640 pagetables:13228
+                             sec_pagetables:0 bounce:0
+                             kernel_misc_reclaimable:0
+                             free:29903 free_pcp:683 free_cma:0
+Apr 05 20:07:07 gmk kernel: Node 0 active_anon:3245524kB inactive_anon:8066920kB active_file:0kB inactive_file:476kB unevictable:37964kB isolated(anon):0kB isolated(file):0kB mapped:8920kB dirty:0kB writeback:52kB shmem:10560kB shmem_thp:8192kB shmem_pmdmapped:0kB anon_thp:1933312kB writeback_tmp:0kB kernel_stack:7104kB pagetables:52912kB sec_pagetables:0kB all_unreclaimable? yes
+Apr 05 20:07:07 gmk kernel: Node 0 DMA free:13312kB boost:0kB min:84kB low:104kB high:124kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15992kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+Apr 05 20:07:07 gmk kernel: lowmem_reserve[]: 0 1646 11614 11614 11614
+Apr 05 20:07:07 gmk kernel: Node 0 DMA32 free:48620kB boost:0kB min:9568kB low:11960kB high:14352kB reserved_highatomic:0KB active_anon:245576kB inactive_anon:1453120kB active_file:0kB inactive_file:48kB unevictable:0kB writepending:0kB present:1824016kB managed:1756952kB mlocked:0kB bounce:0kB free_pcp:2732kB local_pcp:0kB free_cma:0kB
+Apr 05 20:07:07 gmk kernel: lowmem_reserve[]: 0 0 9967 9967 9967
+Apr 05 20:07:07 gmk kernel: Node 0 Normal free:57680kB boost:0kB min:57924kB low:72404kB high:86884kB reserved_highatomic:0KB active_anon:2999948kB inactive_anon:6613800kB active_file:172kB inactive_file:704kB unevictable:37964kB writepending:52kB present:10481664kB managed:10215792kB mlocked:27444kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+Apr 05 20:07:07 gmk kernel: lowmem_reserve[]: 0 0 0 0 0
+Apr 05 20:07:07 gmk kernel: Node 0 DMA: 0*4kB 0*8kB 0*16kB 0*32kB 0*64kB 0*128kB 0*256kB 0*512kB 1*1024kB (U) 2*2048kB (UM) 2*4096kB (M) = 13312kB
+Apr 05 20:07:07 gmk kernel: Node 0 DMA32: 140*4kB (UME) 126*8kB (UE) 228*16kB (UE) 172*32kB (UE) 144*64kB (UME) 76*128kB (UE) 40*256kB (UME) 8*512kB (UME) 3*1024kB (UM) 1*2048kB (M) 0*4096kB = 49120kB
+Apr 05 20:07:07 gmk kernel: Node 0 Normal: 646*4kB (UME) 562*8kB (UME) 1259*16kB (UME) 529*32kB (UME) 166*64kB (UME) 8*128kB (M) 1*256kB (M) 0*512kB 0*1024kB 1*2048kB (M) 0*4096kB = 58104kB
+Apr 05 20:07:07 gmk kernel: Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=1048576kB
+Apr 05 20:07:07 gmk kernel: Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
+Apr 05 20:07:07 gmk kernel: 12746 total pagecache pages
+Apr 05 20:07:07 gmk kernel: 7830 pages in swap cache
+Apr 05 20:07:07 gmk kernel: Free swap  = 40kB
+Apr 05 20:07:07 gmk kernel: Total swap = 4194300kB
+Apr 05 20:07:07 gmk kernel: 3080418 pages RAM
+Apr 05 20:07:07 gmk kernel: 0 pages HighMem/MovableOnly
+Apr 05 20:07:07 gmk kernel: 83392 pages reserved
+Apr 05 20:07:07 gmk kernel: 0 pages hwpoisoned
+Apr 05 20:07:07 gmk kernel: Tasks state (memory values in pages):
+Apr 05 20:07:07 gmk kernel: [  pid  ]   uid  tgid total_vm      rss rss_anon rss_file rss_shmem pgtables_bytes swapents oom_score_adj name
+Apr 05 20:07:07 gmk kernel: [    741]   101   741     2544     1024      256      768         0    57344       64          -900 dbus-daemon
+Apr 05 20:07:07 gmk kernel: [    765]     0   765     4563      930       98      832         0    77824      224             0 systemd-logind
+Apr 05 20:07:07 gmk kernel: [    776]     0   776     4346      736       64      672         0    77824      160             0 wpa_supplicant
+Apr 05 20:07:07 gmk kernel: [    849]     0   849    27410      896       96      800         0   118784     2272             0 unattended-upgr
+Apr 05 20:07:07 gmk kernel: [    972]     0   972     1706      544        0      544         0    57344       32             0 cron
+Apr 05 20:07:07 gmk kernel: [    981]     0   981     1526      448        0      448         0    53248       32             0 agetty
+Apr 05 20:07:07 gmk kernel: [   1009]  1000  1009     5074      832       64      768         0    86016      416           100 systemd
+Apr 05 20:07:07 gmk kernel: [   1010]  1000  1010     5288      335       47      288         0    77824      384           100 (sd-pam)
+Apr 05 20:07:07 gmk kernel: [  11818]   998 11818     4761      768       64      704         0    73728      256             0 systemd-network
+Apr 05 20:07:07 gmk kernel: [  11838]     0 11838    10621     1017      128      889         0   102400      160          -250 systemd-journal
+Apr 05 20:07:07 gmk kernel: [  11916]   997 11916    22757      896       64      832         0    90112      160             0 systemd-timesyn
+Apr 05 20:07:07 gmk kernel: [  12025]     0 12025     7261      755      128      627         0    81920      608         -1000 systemd-udevd
+Apr 05 20:07:07 gmk kernel: [  12109]   992 12109     5410      800       64      736         0    81920      512             0 systemd-resolve
+Apr 05 20:07:07 gmk kernel: [  17356]     0 17356    72279     6816     4640     2176         0   118784        0         -1000 multipathd
+Apr 05 20:07:07 gmk kernel: [  17396]   103 17396    55627      992      128      864         0    90112      128             0 rsyslogd
+Apr 05 20:07:07 gmk kernel: [  22247]   991 22247    77041      896       32      864         0    98304      160             0 polkitd
+Apr 05 20:07:07 gmk kernel: [  22248]     0 22248    78508      768       32      736         0   114688      384             0 upowerd
+Apr 05 20:07:07 gmk kernel: [  22275]     0 22275    98023      928       64      864         0   122880      480             0 ModemManager
+Apr 05 20:07:07 gmk kernel: [  22318]     0 22318   105569      928       96      832         0   143360      192             0 thermald
+Apr 05 20:07:07 gmk kernel: [  30333]     0 30333   117238     1280      320      960         0   143360      416             0 udisksd
+Apr 05 20:07:07 gmk kernel: [  34288]     0 34288     3006      608        0      608         0    65536      288         -1000 sshd
+Apr 05 20:07:07 gmk kernel: [  35428]  1000 35428     2323      928        0      928         0    61440       96           200 dbus-daemon
+Apr 05 20:07:07 gmk kernel: [ 888844]  1000 888844  8586981  2815763  2815731       32         0 50626560  1038127             0 kaspad
+Apr 05 20:07:07 gmk kernel: [ 888957]  1000 888957     2130      576       64      512         0    57344      192             0 bash
+Apr 05 20:07:07 gmk kernel: [ 936999]     0 936999   119745     1606      678      928         0   245760      896             0 fwupd
+Apr 05 20:07:07 gmk kernel: [1797259]  1000 1797259     2001      512       32      480         0    57344       32             0 bash
+Apr 05 20:07:07 gmk kernel: [1797279]  1000 1797279     1536      384        0      384         0    57344        0             0 tail
+Apr 05 20:07:07 gmk kernel: [1797280]  1000 1797280     2097      640      160      480         0    53248       32             0 bash
+Apr 05 20:07:07 gmk kernel: [1797281]  1000 1797281    70237      940      300      640         0   102400      128             0 node-resource-r
+Apr 05 20:07:07 gmk kernel: [1797282]  1000 1797282     1935      576       64      512         0    61440        0             0 bash
+Apr 05 20:07:07 gmk kernel: [1797283]  1000 1797283     2064      544       64      480         0    57344      128             0 bash
+Apr 05 20:07:07 gmk kernel: [1797313]  1000 1797313     1536      384        0      384         0    49152        0             0 tail
+Apr 05 20:07:07 gmk kernel: [1797314]  1000 1797314     1536      384        0      384         0    53248        0             0 tail
+Apr 05 20:07:07 gmk kernel: [1797315]  1000 1797315     1536      416        0      416         0    49152        0             0 tail
+Apr 05 20:07:07 gmk kernel: [ 197817]  1000 197817     1528      384        0      384         0    57344        0             0 sleep
+Apr 05 20:07:07 gmk kernel: [ 197819]  1000 197819     1935      258       34      224         0    57344       32             0 bash
+Apr 05 20:07:07 gmk kernel: [ 197820]  1000 197820     1532      480       32      448         0    49152        0             0 iostat
+Apr 05 20:07:07 gmk kernel: [ 197821]  1000 197821     4674     1632     1088      544         0    77824        0             0 python3
+Apr 05 20:07:07 gmk kernel: [ 197846]  1000 197846     1528      384        0      384         0    45056        0             0 sleep
+Apr 05 20:07:07 gmk kernel: [ 197847]  1000 197847     1528      384        0      384         0    53248        0             0 sleep
+Apr 05 20:07:07 gmk kernel: oom-kill:constraint=CONSTRAINT_NONE,nodemask=(null),cpuset=/,mems_allowed=0,global_oom,task_memcg=/user.slice/user-1000.slice/session-461.scope,task=kaspad,pid=888844,uid=1000
+Apr 05 20:07:07 gmk kernel: Out of memory: Killed process 888844 (kaspad) total-vm:34347924kB, anon-rss:11262924kB, file-rss:128kB, shmem-rss:0kB, UID:1000 pgtables:49440kB oom_score_adj:0
+Apr 05 20:07:07 gmk kernel: Purging GPU memory, 0 pages freed, 0 pages still pinned, 225 pages left available.
+Apr 05 20:07:07 gmk systemd[1]: session-461.scope: A process of this unit has been killed by the OOM killer.
+Apr 05 20:09:35 gmk systemd[1]: session-461.scope: Deactivated successfully.
+Apr 05 20:09:35 gmk systemd[1]: session-461.scope: Consumed 1d 22h 16min 37.117s CPU time.
+Apr 05 20:09:35 gmk systemd-logind[765]: Removed session 461.
+Apr 05 20:09:45 gmk systemd[1]: Stopping user@1000.service - User Manager for UID 1000...
+Apr 05 20:09:46 gmk systemd[1009]: Activating special unit exit.target...
+Apr 05 20:09:46 gmk systemd[1009]: Stopped target default.target - Main User Target.
+Apr 05 20:09:46 gmk systemd[1009]: Stopping dbus.service - D-Bus User Message Bus...
+Apr 05 20:09:46 gmk systemd[1009]: Stopped dbus.service - D-Bus User Message Bus.
+Apr 05 20:09:46 gmk systemd[1009]: Removed slice session.slice - User Core Session Slice.
+Apr 05 20:09:46 gmk systemd[1009]: Stopped target basic.target - Basic System.
+Apr 05 20:09:46 gmk systemd[1009]: Stopped target paths.target - Paths.
+Apr 05 20:09:46 gmk systemd[1009]: Stopped target sockets.target - Sockets.
+Apr 05 20:09:46 gmk systemd[1009]: Stopped target timers.target - Timers.
+Apr 05 20:09:46 gmk systemd[1009]: Stopped launchpadlib-cache-clean.timer - Clean up old files in the Launchpadlib cache.
+Apr 05 20:09:46 gmk systemd[1009]: Closed dbus.socket - D-Bus User Message Bus Socket.
+Apr 05 20:09:46 gmk systemd[1009]: Closed dirmngr.socket - GnuPG network certificate management daemon.
+Apr 05 20:09:46 gmk systemd[1009]: Closed gpg-agent-browser.socket - GnuPG cryptographic agent and passphrase cache (access for web browsers).
+Apr 05 20:09:46 gmk systemd[1009]: Closed gpg-agent-extra.socket - GnuPG cryptographic agent and passphrase cache (restricted).
+Apr 05 20:09:46 gmk systemd[1009]: Stopping gpg-agent-ssh.socket - GnuPG cryptographic agent (ssh-agent emulation)...
+Apr 05 20:09:46 gmk systemd[1009]: Closed gpg-agent.socket - GnuPG cryptographic agent and passphrase cache.
+Apr 05 20:09:46 gmk systemd[1009]: Closed keyboxd.socket - GnuPG public key management service.
+Apr 05 20:09:46 gmk systemd[1009]: Closed pk-debconf-helper.socket - debconf communication socket.
+Apr 05 20:09:46 gmk systemd[1009]: Closed snapd.session-agent.socket - REST API socket for snapd user session agent.
+Apr 05 20:09:46 gmk systemd[1009]: Closed gpg-agent-ssh.socket - GnuPG cryptographic agent (ssh-agent emulation).
+Apr 05 20:09:46 gmk systemd[1009]: Removed slice app.slice - User Application Slice.
+Apr 05 20:09:46 gmk systemd[1009]: Reached target shutdown.target - Shutdown.
+Apr 05 20:09:46 gmk systemd[1009]: Finished systemd-exit.service - Exit the Session.
+Apr 05 20:09:46 gmk systemd[1009]: Reached target exit.target - Exit the Session.
+Apr 05 20:09:46 gmk systemd[1]: user@1000.service: Deactivated successfully.
+Apr 05 20:09:46 gmk systemd[1]: Stopped user@1000.service - User Manager for UID 1000.
+Apr 05 20:09:46 gmk systemd[1]: user@1000.service: Consumed 1d 10h 36min 37.790s CPU time, 6.4M memory peak, 0B memory swap peak.
+Apr 05 20:09:46 gmk systemd[1]: user-1000.slice: A process of this unit has been killed by the OOM killer.
+Apr 05 20:09:46 gmk systemd[1]: user.slice: A process of this unit has been killed by the OOM killer.
+Apr 05 20:09:46 gmk systemd[1]: Stopping user-runtime-dir@1000.service - User Runtime Directory /run/user/1000...
+Apr 05 20:09:46 gmk systemd[1]: run-user-1000.mount: Deactivated successfully.
+Apr 05 20:09:46 gmk systemd[1]: user-runtime-dir@1000.service: Deactivated successfully.
+Apr 05 20:09:46 gmk systemd[1]: Stopped user-runtime-dir@1000.service - User Runtime Directory /run/user/1000.
+Apr 05 20:09:46 gmk systemd[1]: Removed slice user-1000.slice - User Slice of UID 1000.
+Apr 05 20:09:46 gmk systemd[1]: user-1000.slice: Consumed 3d 9h 33min 17.325s CPU time, 3.6G memory peak, 0B memory swap peak.
+Apr 05 20:10:08 gmk systemd[1]: Starting sysstat-collect.service - system activity accounting tool...
+Apr 05 20:10:08 gmk systemd[1]: sysstat-collect.service: Deactivated successfully.
+Apr 05 20:10:08 gmk systemd[1]: Finished sysstat-collect.service - system activity accounting tool.
+Apr 05 20:15:01 gmk CRON[197963]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+Apr 05 20:15:01 gmk CRON[197964]: (root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)
+Apr 05 20:15:01 gmk CRON[197963]: pam_unix(cron:session): session closed for user root
+Apr 05 20:17:01 gmk CRON[197967]: pam_unix(cron:session): session opened for user root(uid=0) by root(uid=0)
+Apr 05 20:17:01 gmk CRON[197968]: (root) CMD (cd / && run-parts --report /etc/cron.hourly)
+Apr 05 20:17:01 gmk CRON[197967]: pam_unix(cron:session): session closed for user root

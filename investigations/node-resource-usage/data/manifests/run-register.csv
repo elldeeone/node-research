@@ -1,0 +1,34 @@
+run_id,logical_run,tier,role,phase,report_use,audit_pack,raw_bundle_expected,report_sections,notes
+run-001-ibd-2026-03-30T02-32-58Z,1,report,private-node,ibd,precursor-state-separation,docs-only,yes,4,precursor mainnet window
+run-002-synced-stress-2026-03-30T04-41-02Z,2,report,private-node,synced-stress,precursor-state-separation,docs-only,yes,4,precursor mainnet window
+run-003-synced-stress-pruning-followup-2026-03-30T06-41-10Z,3,report,private-node,synced-stress-pruning,precursor-state-separation,docs-only,yes,4,precursor mainnet window
+run-004-devnet-bootstrap-ibd-contention-manual-2026-04-01T23-38-35Z,4,report,bootstrap-contention,manual-bootstrap-contention,precursor-bootstrap-failure,docs-only,yes,4,manual contention study
+run-005-devnet-ibd-2026-04-04T12-08-48Z,5,report,private-node,ibd,healthy-reference,docs-plus-timeseries,yes,5;6.1,paired with other run-005 windows
+run-005-devnet-synced-stress-2026-04-04T12-08-48Z,5,report,private-node,synced-stress,healthy-reference,docs-plus-timeseries,yes,5;6.1,paired with other run-005 windows
+run-005-devnet-synced-stress-pruning-2026-04-04T12-08-48Z,5,report,private-node,synced-stress-pruning,healthy-reference,docs-plus-timeseries,yes,5;6.1;7,paired with other run-005 windows
+run-006-devnet-ibd-2026-04-04T12-15-49Z,6,report,private-node,ibd,failure-boundary,docs-plus-timeseries,yes,5;6.2,paired with run-006 failure window
+run-006-devnet-synced-stress-2026-04-04T12-15-49Z,6,report,private-node,post-prune-failure,failure-boundary,docs-plus-timeseries,yes,5;6.2;7,failure note and oom evidence
+run-007-devnet-ibd-2026-04-04T12-08-48Z,7,report,private-node,ibd,headroom-boundary,docs-plus-timeseries,yes,5;6.2,paired with run-007 failure window
+run-007-devnet-synced-stress-pruning-2026-04-04T12-08-48Z,7,report,private-node,synced-stress-pruning,headroom-boundary,docs-plus-timeseries,yes,5;6.2;7,failure note and oom evidence
+run-008a-devnet-relay-serving-leaf1-ibd-2026-04-07T13-41-23Z,8a,report,relay,serving-1-leaf,serving-scaling,docs-plus-timeseries,yes,5;6.3,primary relay window
+run-008b-devnet-relay-serving-leaf1-plus-leaf2-ibd-2026-04-07T23-41-55Z,8b,report,relay,serving-2-leaf,serving-scaling,docs-plus-timeseries,yes,5;6.3,primary relay window
+run-008c-devnet-relay-serving-8-leaf-ibd-2026-04-08T03-13-19Z,8c,report,relay,serving-8-leaf,serving-scaling,docs-plus-timeseries,yes,5;6.3;7,primary relay window
+run-008a-devnet-leaf1-ibd-2026-04-07T13-41-23Z,8a,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008b-devnet-leaf2-ibd-2026-04-07T23-41-55Z,8b,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008b-devnet-leaf2-synced-downstream-2026-04-07T23-41-55Z,8b,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf1-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf1-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf2-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf2-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf3-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf3-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf4-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf4-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf5-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf5-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf6-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf6-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf7-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf7-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence
+run-008c-devnet-leaf8-ibd-2026-04-08T03-13-19Z,8c,supporting,leaf,ibd,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream timing evidence
+run-008c-devnet-leaf8-synced-downstream-2026-04-08T03-13-19Z,8c,supporting,leaf,synced-downstream,relay-ibd-timing,supporting-docs-only,yes,6.3,downstream completion evidence

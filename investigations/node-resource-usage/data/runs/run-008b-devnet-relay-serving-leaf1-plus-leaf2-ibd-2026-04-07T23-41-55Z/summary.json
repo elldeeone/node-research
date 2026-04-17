@@ -1,0 +1,647 @@
+{
+  "duration_sec": 9111.0,
+  "generated_at_utc": "2026-04-08T02:14:44.378598Z",
+  "host_metrics": {
+    "disk_avg_queue_depth": {
+      "avg": 0.45756031802965086,
+      "last": 0.037,
+      "max": 9.441,
+      "min": 0.0075,
+      "p95": 1.979,
+      "samples": 8364.0
+    },
+    "disk_busy_pct": {
+      "avg": 13.602319464371114,
+      "last": 3.9,
+      "max": 63.9,
+      "min": 0.75,
+      "p95": 30.2,
+      "samples": 8364.0
+    },
+    "disk_discard_await_ms": {
+      "avg": 0.0,
+      "last": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "p95": 0.0,
+      "samples": 8364.0
+    },
+    "disk_discard_bytes_per_sec": {
+      "avg": 0.0,
+      "last": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "p95": 0.0,
+      "samples": 8364.0
+    },
+    "disk_discard_ops_per_sec": {
+      "avg": 0.0,
+      "last": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "p95": 0.0,
+      "samples": 8364.0
+    },
+    "disk_flush_await_ms": {
+      "avg": 0.09444949665960563,
+      "last": 0.0,
+      "max": 2.0,
+      "min": 0.0,
+      "p95": 0.5,
+      "samples": 8364.0
+    },
+    "disk_flush_ops_per_sec": {
+      "avg": 10.466104734576758,
+      "last": 0.0,
+      "max": 134.0,
+      "min": 0.0,
+      "p95": 70.0,
+      "samples": 8364.0
+    },
+    "disk_in_flight": {
+      "avg": 0.3913199426111908,
+      "last": 0.0,
+      "max": 76.0,
+      "min": 0.0,
+      "p95": 1.0,
+      "samples": 8364.0
+    },
+    "disk_read_avg_request_bytes": {
+      "avg": 40757.221081771866,
+      "last": 16112.741721854305,
+      "max": 333550.5894206549,
+      "min": 5884.1015228426395,
+      "p95": 115219.86865671641,
+      "samples": 8364.0
+    },
+    "disk_read_await_ms": {
+      "avg": 0.3280641851904028,
+      "last": 0.25165562913907286,
+      "max": 1.7101855848079413,
+      "min": 0.1651179413867048,
+      "p95": 0.5682773109243697,
+      "samples": 8364.0
+    },
+    "disk_read_bytes_per_sec": {
+      "avg": 24497016.593017694,
+      "last": 2433024.0,
+      "max": 253558784.0,
+      "min": 393216.0,
+      "p95": 100921344.0,
+      "samples": 8364.0
+    },
+    "disk_read_merges_per_sec": {
+      "avg": 2.9322692491630797,
+      "last": 0.0,
+      "max": 118.0,
+      "min": 0.0,
+      "p95": 23.0,
+      "samples": 8364.0
+    },
+    "disk_read_ops_per_sec": {
+      "avg": 546.7086920133908,
+      "last": 151.0,
+      "max": 4991.0,
+      "min": 26.0,
+      "p95": 1162.0,
+      "samples": 8364.0
+    },
+    "disk_write_avg_request_bytes": {
+      "avg": 135085.80212335326,
+      "last": 0.0,
+      "max": 1310720.0,
+      "min": 0.0,
+      "p95": 488501.8947368421,
+      "samples": 8364.0
+    },
+    "disk_write_await_ms": {
+      "avg": 1.185676818241425,
+      "last": 0.0,
+      "max": 9.75,
+      "min": 0.0,
+      "p95": 3.9,
+      "samples": 8364.0
+    },
+    "disk_write_bytes_per_sec": {
+      "avg": 26947750.993782878,
+      "last": 0.0,
+      "max": 307593216.0,
+      "min": 0.0,
+      "p95": 177778688.0,
+      "samples": 8364.0
+    },
+    "disk_write_merges_per_sec": {
+      "avg": 79.17641080822573,
+      "last": 0.0,
+      "max": 963.0,
+      "min": 0.0,
+      "p95": 496.0,
+      "samples": 8364.0
+    },
+    "disk_write_ops_per_sec": {
+      "avg": 77.96293639406983,
+      "last": 0.0,
+      "max": 748.0,
+      "min": 0.0,
+      "p95": 413.0,
+      "samples": 8364.0
+    },
+    "net_rx_bytes_per_sec": {
+      "avg": 1207778.4029172645,
+      "last": 944026.0,
+      "max": 6473587.0,
+      "min": 161438.0,
+      "p95": 1878296.0,
+      "samples": 8364.0
+    },
+    "net_tx_bytes_per_sec": {
+      "avg": 6160673.392515543,
+      "last": 1349625.0,
+      "max": 13008218.0,
+      "min": 207167.0,
+      "p95": 9777437.0,
+      "samples": 8364.0
+    },
+    "proc_fd_count": {
+      "avg": 3642.9000478240077,
+      "last": 3639.0,
+      "max": 3651.0,
+      "min": 3599.0,
+      "p95": 3648.0,
+      "samples": 8364.0
+    },
+    "proc_read_bytes_per_sec": {
+      "avg": 24473735.896700144,
+      "last": 2580480.0,
+      "max": 253177856.0,
+      "min": 393216.0,
+      "p95": 100499456.0,
+      "samples": 8364.0
+    },
+    "proc_rss_bytes": {
+      "avg": 7940943895.996174,
+      "last": 7993372672.0,
+      "max": 8162738176.0,
+      "min": 7888855040.0,
+      "p95": 7987884032.0,
+      "samples": 8364.0
+    },
+    "proc_threads": {
+      "avg": 61.43208990913438,
+      "last": 66.0,
+      "max": 66.0,
+      "min": 61.0,
+      "p95": 66.0,
+      "samples": 8364.0
+    },
+    "proc_virtual_bytes": {
+      "avg": 11637645895.253946,
+      "last": 11639721984.0,
+      "max": 11639721984.0,
+      "min": 11637497856.0,
+      "p95": 11639721984.0,
+      "samples": 8364.0
+    },
+    "proc_write_bytes_per_sec": {
+      "avg": 29863456.56623625,
+      "last": 3899392.0,
+      "max": 320045056.0,
+      "min": 520192.0,
+      "p95": 180264960.0,
+      "samples": 8364.0
+    },
+    "storage_used_bytes": {
+      "avg": 175643879193.3429,
+      "last": 176369016832.0,
+      "max": 176470257664.0,
+      "min": 175255126016.0,
+      "p95": 176252956672.0,
+      "samples": 8364.0
+    },
+    "system_cpu_iowait_pct": {
+      "avg": 1.5804708347875784,
+      "last": 0.34443168771526983,
+      "max": 9.210526315789474,
+      "min": 0.0,
+      "p95": 4.166666666666667,
+      "samples": 8364.0
+    },
+    "system_cpu_util_pct": {
+      "avg": 25.84074012601731,
+      "last": 16.53272101033295,
+      "max": 48.34905660377358,
+      "min": 7.067137809187279,
+      "p95": 35.50640279394645,
+      "samples": 8364.0
+    }
+  },
+  "host_sample_count": 8365,
+  "iostat_metrics": {
+    "aqu_sz": {
+      "avg": 0.4378206128133705,
+      "last": 0.02,
+      "max": 8.32,
+      "min": 0.01,
+      "p95": 1.88,
+      "samples": 8975.0
+    },
+    "cpu_iowait_pct": {
+      "avg": 1.5798629526462395,
+      "last": 0.13,
+      "max": 9.38,
+      "min": 0.0,
+      "p95": 4.19,
+      "samples": 8975.0
+    },
+    "devices": [
+      "sda"
+    ],
+    "r_await_ms": {
+      "avg": 0.3274161559888579,
+      "last": 0.29,
+      "max": 1.78,
+      "min": 0.17,
+      "p95": 0.57,
+      "samples": 8975.0
+    },
+    "r_s": {
+      "avg": 525.2186384401115,
+      "last": 75.25,
+      "max": 4480.0,
+      "min": 17.0,
+      "p95": 1120.0,
+      "samples": 8975.0
+    },
+    "rkB_s": {
+      "avg": 22950.51427409471,
+      "last": 1386.14,
+      "max": 210920.0,
+      "min": 308.0,
+      "p95": 95756.0,
+      "samples": 8975.0
+    },
+    "util_pct": {
+      "avg": 13.057362674094708,
+      "last": 2.28,
+      "max": 59.7,
+      "min": 0.6,
+      "p95": 28.6,
+      "samples": 8975.0
+    },
+    "w_await_ms": {
+      "avg": 1.1318729805013927,
+      "last": 0.0,
+      "max": 9.75,
+      "min": 0.0,
+      "p95": 3.84,
+      "samples": 8975.0
+    },
+    "w_s": {
+      "avg": 74.51551420612813,
+      "last": 0.0,
+      "max": 826.0,
+      "min": 0.0,
+      "p95": 392.0,
+      "samples": 8975.0
+    },
+    "wkB_s": {
+      "avg": 25139.400021169917,
+      "last": 0.0,
+      "max": 290408.0,
+      "min": 0.0,
+      "p95": 165180.0,
+      "samples": 8975.0
+    }
+  },
+  "iostat_sample_count": 8975,
+  "metadata": {
+    "collector": "operator-kit",
+    "ended_at_utc": "2026-04-08T02:14:39Z",
+    "host": {
+      "cpu_model": "AMD EPYC-Genoa Processor",
+      "disk_capacity_gib": 300.17,
+      "disk_device": "sda",
+      "disk_type": "local-ssd",
+      "instance_name": "node-perf-devnet-01",
+      "memory_gib": 15.24,
+      "os": "Ubuntu 24.04.4 LTS",
+      "provider": "hetzner",
+      "region": "hel1",
+      "vcpu": 8
+    },
+    "load": {
+      "estimated_bps": 10.0,
+      "estimated_tps": 3000.0,
+      "notes": "",
+      "payload_profile": "unknown",
+      "source": "devnet",
+      "traffic_shape": "sustained synthetic devnet load plus one synced downstream plus one cold downstream IBD"
+    },
+    "node": {
+      "archival": false,
+      "commit": "dac7407e7924e31983aa72a8357967b1e2d8d93a",
+      "flags": [
+        "--utxoindex",
+        "--perf-metrics",
+        "--perf-metrics-interval-sec=1",
+        "--loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug"
+      ],
+      "network": "devnet",
+      "node_role": "pruned",
+      "utxoindex": true,
+      "version": "1.1.0"
+    },
+    "notes": "relay serving synced leaf1 204.168.246.172 plus leaf2 cold IBD 204.168.248.203; upstream addpeer bootstrap 204.168.218.47:16611; direct bootstrap blocked from leaves; run-008b",
+    "run_id": "run-008b-devnet-relay-serving-leaf1-plus-leaf2-ibd-2026-04-07T23-41-55Z",
+    "run_state": "synced-serving-leaf1-plus-leaf2-ibd",
+    "started_at_utc": "2026-04-07T23:42:48Z"
+  },
+  "node_metrics": {
+    "cpu_usage": {
+      "avg": 1.9222339220664533,
+      "last": 1.1504,
+      "max": 3.6796,
+      "min": 0.3827,
+      "p95": 2.669,
+      "samples": 9059.0
+    },
+    "disk_io_read_bytes": {
+      "avg": 572647178693.0513,
+      "last": 672462872576.0,
+      "max": 672462872576.0,
+      "min": 458798309376.0,
+      "p95": 667333173248.0,
+      "samples": 9059.0
+    },
+    "disk_io_read_per_sec": {
+      "avg": 23469679.267479964,
+      "last": 1872922.465,
+      "max": 208504740.299,
+      "min": 489074.627,
+      "p95": 96706356.219,
+      "samples": 9059.0
+    },
+    "disk_io_write_bytes": {
+      "avg": 1298847701515.8123,
+      "last": 1428582223872.0,
+      "max": 1428582223872.0,
+      "min": 1168814481408.0,
+      "p95": 1415662194688.0,
+      "samples": 9059.0
+    },
+    "disk_io_write_per_sec": {
+      "avg": 28535377.155872725,
+      "last": 3302043.738,
+      "max": 271126670.647,
+      "min": 334200.995,
+      "p95": 170309725.646,
+      "samples": 9059.0
+    },
+    "fd_num": {
+      "avg": 3640.9442543327077,
+      "last": 3637.0,
+      "max": 3656.0,
+      "min": 3599.0,
+      "p95": 3646.0,
+      "samples": 9059.0
+    },
+    "resident_set_size": {
+      "avg": 7940964330.749089,
+      "last": 7993372672.0,
+      "max": 8162746368.0,
+      "min": 7888773120.0,
+      "p95": 7987900416.0,
+      "samples": 9059.0
+    },
+    "virtual_memory_size": {
+      "avg": 11637646277.78607,
+      "last": 11639721984.0,
+      "max": 11639721984.0,
+      "min": 11637497856.0,
+      "p95": 11639721984.0,
+      "samples": 9059.0
+    }
+  },
+  "node_sample_count": 9059,
+  "rocksdb_event_count": 75076,
+  "rocksdb_metrics": {
+    "compaction_cpu_time_sec": {
+      "avg": 0.16794205704162976,
+      "last": 0.095076,
+      "max": 2.048402,
+      "min": 0.000217,
+      "p95": 0.425312,
+      "samples": 5645.0
+    },
+    "compaction_output_bytes": {
+      "avg": 37195181.211514615,
+      "last": 8431111.0,
+      "max": 206754976.0,
+      "min": 1846.0,
+      "p95": 98367685.0,
+      "samples": 5645.0
+    },
+    "compaction_time_sec": {
+      "avg": 0.21550162621789193,
+      "last": 0.10576,
+      "max": 2.372383,
+      "min": 0.00122,
+      "p95": 0.49418,
+      "samples": 5645.0
+    },
+    "db_event_counts": {
+      "consensus/consensus-002": {
+        "compaction_finished": 5413,
+        "compaction_started": 5413,
+        "flush_finished": 843,
+        "flush_started": 843,
+        "stall_stats": 30,
+        "table_file_creation": 29185,
+        "table_file_deletion": 29134,
+        "trivial_move": 114,
+        "write_stall_counts": 30
+      },
+      "meta": {
+        "stall_stats": 30,
+        "write_stall_counts": 17
+      },
+      "utxoindex": {
+        "compaction_finished": 232,
+        "compaction_started": 232,
+        "flush_finished": 256,
+        "flush_started": 256,
+        "stall_stats": 30,
+        "table_file_creation": 1494,
+        "table_file_deletion": 1494,
+        "write_stall_counts": 30
+      }
+    },
+    "event_counts": {
+      "compaction_finished": 5645,
+      "compaction_started": 5645,
+      "flush_finished": 1099,
+      "flush_started": 1099,
+      "stall_stats": 90,
+      "table_file_creation": 30679,
+      "table_file_deletion": 30628,
+      "trivial_move": 114,
+      "write_stall_counts": 77
+    },
+    "stall_percent": {
+      "avg": 0.0,
+      "last": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "p95": 0.0,
+      "samples": 90.0
+    },
+    "stall_seconds": {
+      "avg": 0.0,
+      "last": 0.0,
+      "max": 0.0,
+      "min": 0.0,
+      "p95": 0.0,
+      "samples": 90.0
+    }
+  },
+  "rpc_metrics": {
+    "active_peers": {
+      "avg": 2.9982353589941546,
+      "last": 3.0,
+      "max": 3.0,
+      "min": 2.0,
+      "p95": 3.0,
+      "samples": 9067.0
+    },
+    "grpc_bytes_rx_per_sec": {
+      "avg": 88.55801104241596,
+      "last": 89.55223880587938,
+      "max": 89.82035928148213,
+      "min": 83.65019011405774,
+      "p95": 89.64143426295665,
+      "samples": 9066.0
+    },
+    "grpc_bytes_tx_per_sec": {
+      "avg": 305.5401780165248,
+      "last": 306.4676616912317,
+      "max": 307.3852295410722,
+      "min": 291.8250950569969,
+      "p95": 306.7729083665628,
+      "samples": 9066.0
+    },
+    "info_mempool_size": {
+      "avg": 126443.93978162568,
+      "last": 123870.0,
+      "max": 130470.0,
+      "min": 120303.0,
+      "p95": 128426.0,
+      "samples": 9067.0
+    },
+    "is_synced": {
+      "avg": 1.0,
+      "last": 1.0,
+      "max": 1.0,
+      "min": 1.0,
+      "p95": 1.0,
+      "samples": 9067.0
+    },
+    "network_mempool_size": {
+      "avg": 126443.35623690306,
+      "last": 123870.0,
+      "max": 130470.0,
+      "min": 120303.0,
+      "p95": 128426.0,
+      "samples": 9067.0
+    },
+    "network_tip_hashes_count": {
+      "avg": 1.9189368037939782,
+      "last": 1.0,
+      "max": 8.0,
+      "min": 1.0,
+      "p95": 4.0,
+      "samples": 9067.0
+    },
+    "network_virtual_daa_score": {
+      "avg": 5206362.291827506,
+      "last": 5251951.0,
+      "max": 5251951.0,
+      "min": 5160753.0,
+      "p95": 5247410.0,
+      "samples": 9067.0
+    },
+    "network_virtual_parent_hashes_count": {
+      "avg": 1.96547921032315,
+      "last": 1.0,
+      "max": 8.0,
+      "min": 1.0,
+      "p95": 4.0,
+      "samples": 9067.0
+    },
+    "node_bodies_processed_per_sec": {
+      "avg": 10.011506484606885,
+      "last": 13.930348258692348,
+      "max": 23.9282153539453,
+      "min": 0.9950248756217825,
+      "p95": 14.940239043826109,
+      "samples": 9066.0
+    },
+    "node_database_blocks_count": {
+      "avg": 1311808.2917172164,
+      "last": 1357397.0,
+      "max": 1357397.0,
+      "min": 1266199.0,
+      "p95": 1352856.0,
+      "samples": 9067.0
+    },
+    "node_database_headers_count": {
+      "avg": 1311808.2925995367,
+      "last": 1357397.0,
+      "max": 1357397.0,
+      "min": 1266199.0,
+      "p95": 1352856.0,
+      "samples": 9067.0
+    },
+    "node_headers_processed_per_sec": {
+      "avg": 10.011517626515268,
+      "last": 13.930348258692348,
+      "max": 23.9282153539453,
+      "min": 0.9950248756217825,
+      "p95": 14.940239043826109,
+      "samples": 9066.0
+    },
+    "node_mass_processed_per_sec": {
+      "avg": 4991416.765017486,
+      "last": 6945225.8706397265,
+      "max": 11929842.472585801,
+      "min": 496087.56218900083,
+      "p95": 7448725.099602295,
+      "samples": 9066.0
+    },
+    "node_transactions_processed_per_sec": {
+      "avg": 3083.543997258921,
+      "last": 4290.547263677243,
+      "max": 7369.890329015153,
+      "min": 306.467661691509,
+      "p95": 4601.593625498442,
+      "samples": 9066.0
+    },
+    "p2p_bytes_rx_per_sec": {
+      "avg": 1049629.5842859473,
+      "last": 1243900.497511177,
+      "max": 5784936.318407332,
+      "min": 128747.02380954797,
+      "p95": 1564099.304865136,
+      "samples": 9066.0
+    },
+    "p2p_bytes_tx_per_sec": {
+      "avg": 5819371.19632755,
+      "last": 1337889.55223745,
+      "max": 12640780.876495214,
+      "min": 197821.71314760818,
+      "p95": 8836748.258709507,
+      "samples": 9066.0
+    }
+  },
+  "rpc_sample_count": 9067,
+  "window_metrics": {}
+}

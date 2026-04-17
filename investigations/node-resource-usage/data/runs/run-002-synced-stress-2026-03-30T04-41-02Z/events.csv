@@ -1,0 +1,7 @@
+timestamp_utc,event_type,notes
+2026-03-30T05:05:49Z,boost_countdown_start,manual: countdown began after 6 KAS boost deposit
+2026-03-30T05:05:49Z,boost_trigger,manual: sent 6 KAS to boostfuel.kas; txid 919c0f46b3606ca102bcbee93e5850fcf3265068b708bcc0c85f3a1d587488da; UI showed 14:23 countdown left
+2026-03-30T05:19:46Z,boost_countdown_end,node-observed: countdown ended as throughput stepped above cycle mode
+2026-03-30T05:19:46Z,boost_start,node-observed: tx throughput jumped to 754.40 u-tps; mempool surged to 3653 ready; workload stepped above cycle mode
+2026-03-30T05:20:12Z,boost_expected_start,inferred from UI countdown of 14:23 remaining at trigger note time
+2026-03-30T05:25:56Z,boost_end,node-observed: workload returned to cycle range at 374.14 u-tps; mempool sample 78 ready out of 78 txs

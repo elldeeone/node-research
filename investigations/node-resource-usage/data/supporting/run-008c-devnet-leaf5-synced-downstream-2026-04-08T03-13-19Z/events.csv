@@ -1,0 +1,6 @@
+timestamp_utc,event_type,notes
+2026-04-08T05:51:23Z,synced_start,auto: first successful RPC sample was synced
+2026-04-08T06:32:15.427+00:00,pruning_start,auto: detected pruning movement in kaspad log
+2026-04-08T06:41:09.856+00:00,pruning_end,auto: detected pruning UTXO update in kaspad log
+2026-04-08T18:32:35.169+00:00,pruning_start,auto: detected pruning movement in kaspad log
+2026-04-08T18:42:01.150+00:00,pruning_end,auto: detected pruning UTXO update in kaspad log

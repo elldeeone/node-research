@@ -1,0 +1,42 @@
+{
+  "run_id": "run-008b-devnet-relay-serving-leaf1-plus-leaf2-ibd-2026-04-07T23-41-55Z",
+  "run_state": "synced-serving-leaf1-plus-leaf2-ibd",
+  "collector": "operator-kit",
+  "started_at_utc": "2026-04-07T23:42:48Z",
+  "ended_at_utc": "2026-04-08T02:14:39Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "dac7407e7924e31983aa72a8357967b1e2d8d93a",
+    "network": "devnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1",
+      "--loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug"
+    ]
+  },
+  "host": {
+    "provider": "hetzner",
+    "region": "hel1",
+    "instance_name": "node-perf-devnet-01",
+    "cpu_model": "AMD EPYC-Genoa Processor",
+    "vcpu": 8,
+    "memory_gib": 15.24,
+    "disk_type": "local-ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 300.17,
+    "os": "Ubuntu 24.04.4 LTS"
+  },
+  "load": {
+    "source": "devnet",
+    "traffic_shape": "sustained synthetic devnet load plus one synced downstream plus one cold downstream IBD",
+    "payload_profile": "unknown",
+    "estimated_tps": 3000.0,
+    "estimated_bps": 10.0,
+    "notes": ""
+  },
+  "notes": "relay serving synced leaf1 204.168.246.172 plus leaf2 cold IBD 204.168.248.203; upstream addpeer bootstrap 204.168.218.47:16611; direct bootstrap blocked from leaves; run-008b"
+}

@@ -1,0 +1,42 @@
+{
+  "run_id": "run-005-devnet-synced-stress-pruning-2026-04-04T12-08-48Z",
+  "run_state": "synced-stress-pruning",
+  "collector": "operator-kit",
+  "started_at_utc": "2026-04-04T18:32:08Z",
+  "ended_at_utc": "2026-04-07T10:08:19Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "dac7407e7924e31983aa72a8357967b1e2d8d93a",
+    "network": "devnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1",
+      "--loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug"
+    ]
+  },
+  "host": {
+    "provider": "hetzner",
+    "region": "hel1",
+    "instance_name": "node-perf-devnet-01",
+    "cpu_model": "AMD EPYC-Genoa Processor",
+    "vcpu": 8,
+    "memory_gib": 15.24,
+    "disk_type": "local-ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 300.17,
+    "os": "Ubuntu 24.04.4 LTS"
+  },
+  "load": {
+    "source": "devnet",
+    "traffic_shape": "sustained synthetic devnet load",
+    "payload_profile": "unknown",
+    "estimated_tps": 3000.0,
+    "estimated_bps": 10.0,
+    "notes": ""
+  },
+  "notes": "fresh rerun; peer 204.168.218.47:16611; run-005 auto-rolled from run-005-devnet-ibd-2026-04-04T12-08-48Z on sync at 2026-04-04T13:35:04Z auto-rolled from run-005-devnet-synced-stress-2026-04-04T12-08-48Z on pruning_start at 2026-04-04T18:32:06.278+00:00"
+}

@@ -1,0 +1,41 @@
+{
+  "run_id": "run-001-ibd-2026-03-30T02-32-58Z",
+  "run_state": "ibd",
+  "collector": "codex",
+  "started_at_utc": "2026-03-30T02:37:50Z",
+  "ended_at_utc": "2026-03-30T04:41:02Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "4170cb299c128790569fdbfc8a43803ad73de584",
+    "network": "mainnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1"
+    ]
+  },
+  "host": {
+    "provider": "hetzner",
+    "region": "hel1",
+    "instance_name": "ccx33",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "vcpu": 8,
+    "memory_gib": 32,
+    "disk_type": "ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 240,
+    "os": "ubuntu-24.04"
+  },
+  "load": {
+    "source": "mainnet",
+    "traffic_shape": "mixed ambient-to-live stress",
+    "payload_profile": "unknown",
+    "estimated_tps": null,
+    "estimated_bps": 10,
+    "notes": "cold-start IBD on Hetzner ccx33 hel1; kaspadrome activity became significant before run end"
+  },
+  "notes": "branch node-perf synced to VPS via rsync; first is_synced=1 observed at 2026-03-30T03:56:15Z; wrapped at 2026-03-30T04:41:02Z without restarting node; authoritative frozen perf log: kaspad.log.closed"
+}

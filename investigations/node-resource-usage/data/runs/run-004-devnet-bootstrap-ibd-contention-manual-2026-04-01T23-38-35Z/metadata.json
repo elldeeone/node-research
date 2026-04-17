@@ -1,0 +1,48 @@
+{
+  "run_id": "run-004-devnet-bootstrap-ibd-contention-manual-2026-04-01T23-38-35Z",
+  "run_state": "devnet-bootstrap-ibd-contention-manual",
+  "collector": "codex",
+  "started_at_utc": "2026-04-01T23:38:35Z",
+  "ended_at_utc": "2026-04-01T23:48:12Z",
+  "node": {
+    "version": "unknown",
+    "commit": "unknown",
+    "network": "devnet",
+    "node_role": "bootstrap",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--devnet",
+      "--enable-unsynced-mining",
+      "--utxoindex",
+      "--disable-upnp",
+      "--nodnsseed",
+      "--appdir=/home/ubuntu/kaspad-devnet-bootstrap-appdir",
+      "--listen=0.0.0.0:16611",
+      "--rpclisten=0.0.0.0:16610",
+      "--rpclisten-borsh=0.0.0.0:17610",
+      "--rpclisten-json=0.0.0.0:18610"
+    ]
+  },
+  "host": {
+    "provider": "proxmox",
+    "region": "pve2",
+    "instance_name": "kaspa-devnet",
+    "cpu_model": "AMD Ryzen 7 5800X 8-Core Processor",
+    "vcpu": 12,
+    "memory_gib": 25,
+    "disk_type": "ssd-backed virtual disk",
+    "disk_device": "sda",
+    "disk_capacity_gib": 330,
+    "os": "ubuntu-24.04"
+  },
+  "load": {
+    "source": "mac-offbox + hetzner-dut",
+    "traffic_shape": "off-box tx churn plus remote IBD",
+    "payload_profile": "1-in-1-out self-spend churn",
+    "estimated_tps": 2000,
+    "estimated_bps": 10,
+    "notes": "VM miner and VM txgen were disabled. Mac miner and Mac txgen targeted the bootstrap node over LAN. Hetzner DUT IBDed from the bootstrap node over WAN."
+  },
+  "notes": "Manual capture focused on bootstrap-node resource behavior while acting as both the hot devnet producer/tx sink and the sole IBD source for a DUT. Prior to the hot sample, the DUT hit a 120s IBD timeout at 2026-04-01T23:34:53Z while the bootstrap remained under load."
+}

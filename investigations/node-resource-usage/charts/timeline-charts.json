@@ -1,0 +1,59 @@
+{
+  "runs_root": "../data/runs",
+  "figures_out": "../figures",
+  "charts_out": ".",
+  "charts": [
+    {
+      "key": "run-5",
+      "label": "Run 5 - Hetzner CPX42, private node (healthy reference)",
+      "dirs": [
+        "run-005-devnet-ibd-2026-04-04T12-08-48Z",
+        "run-005-devnet-synced-stress-2026-04-04T12-08-48Z",
+        "run-005-devnet-synced-stress-pruning-2026-04-04T12-08-48Z"
+      ],
+      "filename": "run-5-timeline"
+    },
+    {
+      "key": "run-6",
+      "label": "Run 6 - Proxmox VM, private node (storage-limited failure)",
+      "dirs": [
+        "run-006-devnet-ibd-2026-04-04T12-15-49Z",
+        "run-006-devnet-synced-stress-2026-04-04T12-15-49Z"
+      ],
+      "filename": "run-6-timeline"
+    },
+    {
+      "key": "run-7",
+      "label": "Run 7 - GMK NucBox G5, private node (marginal headroom)",
+      "dirs": [
+        "run-007-devnet-ibd-2026-04-04T12-08-48Z",
+        "run-007-devnet-synced-stress-pruning-2026-04-04T12-08-48Z"
+      ],
+      "filename": "run-7-timeline"
+    },
+    {
+      "key": "run-8a",
+      "label": "Run 8a - Hetzner CPX42 relay, serving 1 cold leaf",
+      "dirs": [
+        "run-008a-devnet-relay-serving-leaf1-ibd-2026-04-07T13-41-23Z"
+      ],
+      "filename": "run-8a-timeline"
+    },
+    {
+      "key": "run-8b",
+      "label": "Run 8b - Hetzner CPX42 relay, serving 1 synced + 1 cold leaf",
+      "dirs": [
+        "run-008b-devnet-relay-serving-leaf1-plus-leaf2-ibd-2026-04-07T23-41-55Z"
+      ],
+      "filename": "run-8b-timeline"
+    },
+    {
+      "key": "run-8c",
+      "label": "Run 8c - Hetzner CPX42 relay, serving 8 cold leaves",
+      "dirs": [
+        "run-008c-devnet-relay-serving-8-leaf-ibd-2026-04-08T03-13-19Z"
+      ],
+      "filename": "run-8c-timeline"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "run_id": "run-002-synced-stress-2026-03-30T04-41-02Z",
+  "run_state": "synced-stress",
+  "collector": "codex",
+  "started_at_utc": "2026-03-30T04:41:02Z",
+  "ended_at_utc": "2026-03-30T05:36:28Z",
+  "node": {
+    "version": "1.1.0",
+    "commit": "4170cb299c128790569fdbfc8a43803ad73de584",
+    "network": "mainnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1"
+    ]
+  },
+  "host": {
+    "provider": "hetzner",
+    "region": "hel1",
+    "instance_name": "ccx33",
+    "cpu_model": "AMD EPYC-Milan Processor",
+    "vcpu": 8,
+    "memory_gib": 32,
+    "disk_type": "ssd",
+    "disk_device": "sda",
+    "disk_capacity_gib": 240,
+    "os": "ubuntu-24.04"
+  },
+  "load": {
+    "source": "mainnet",
+    "traffic_shape": "cycle stress with controlled boost window",
+    "payload_profile": "unknown",
+    "estimated_tps": null,
+    "estimated_bps": 10,
+    "notes": "started after sync while kaspadrome phase unknown; classify by node-observed workload; controlled boost funded with 6 KAS; txid 919c0f46b3606ca102bcbee93e5850fcf3265068b708bcc0c85f3a1d587488da"
+  },
+  "notes": "continued on same kaspad process after run-001; fresh collectors/log tap for synced-stress window; boost window observed 2026-03-30T05:19:46Z to 2026-03-30T05:25:56Z"
+}

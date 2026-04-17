@@ -1,0 +1,41 @@
+{
+  "run_id": "replace-me",
+  "run_state": "replace-me",
+  "collector": "replace-me",
+  "started_at_utc": "2026-03-28T00:00:00Z",
+  "ended_at_utc": "2026-03-29T00:00:00Z",
+  "node": {
+    "version": "replace-me",
+    "commit": "replace-me",
+    "network": "mainnet",
+    "node_role": "pruned",
+    "utxoindex": true,
+    "archival": false,
+    "flags": [
+      "--utxoindex",
+      "--perf-metrics",
+      "--perf-metrics-interval-sec=1"
+    ]
+  },
+  "host": {
+    "provider": "replace-me",
+    "region": "replace-me",
+    "instance_name": "replace-me",
+    "cpu_model": "replace-me",
+    "vcpu": 8,
+    "memory_gib": 16,
+    "disk_type": "ssd",
+    "disk_device": "nvme0n1",
+    "disk_capacity_gib": 500,
+    "os": "ubuntu-24.04"
+  },
+  "load": {
+    "source": "kaspadrome",
+    "traffic_shape": "wallet churn",
+    "payload_profile": "unknown",
+    "estimated_tps": null,
+    "estimated_bps": 10,
+    "notes": "replace-me"
+  },
+  "notes": "replace-me"
+}

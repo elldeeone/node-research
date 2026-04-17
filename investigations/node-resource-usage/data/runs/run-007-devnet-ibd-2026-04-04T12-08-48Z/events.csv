@@ -1,0 +1,5 @@
+timestamp_utc,event_type,notes
+2026-04-04T17:42:59.662+00:00,ibd_end,auto: detected IBD completion in kaspad log
+2026-04-04T17:42:59.663+00:00,ibd_start,auto: detected IBD start in kaspad log
+2026-04-04T19:13:34.071+00:00,ibd_start,auto: detected IBD start in kaspad log
+2026-04-04T20:17:48.467+00:00,pruning_start,auto: detected pruning movement in kaspad log

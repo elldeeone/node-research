@@ -1,0 +1,8 @@
+timestamp_utc,event_type,notes
+2026-04-01T23:34:53Z,ibd_timeout,manual: Hetzner DUT timed out after bootstrap served sustained off-box tx load plus IBD for several minutes
+2026-04-01T23:39:36Z,hot_capture_start,manual: 90s hot sample started; Mac miner plus Mac txgen active; Hetzner DUT still using bootstrap as sole IBD source
+2026-04-01T23:41:06Z,hot_capture_end,manual: hot sample ended
+2026-04-01T23:42:00Z,idle_capture_start,manual: Mac miner, Mac txgen, and DUT were stopped; node-only idle baseline started
+2026-04-01T23:43:30Z,idle_capture_end,manual: idle baseline ended
+2026-04-01T23:44:42Z,fio_start,manual: bootstrap service stopped; fio sequential/random device benchmarks started
+2026-04-01T23:47:01Z,fio_end,manual: fio benchmarks ended; bootstrap service restarted

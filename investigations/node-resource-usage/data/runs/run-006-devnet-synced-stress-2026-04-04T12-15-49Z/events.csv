@@ -1,0 +1,11 @@
+timestamp_utc,event_type,notes
+2026-04-04T18:44:28Z,synced_start,auto: first successful RPC sample was synced
+2026-04-04T18:45:12Z,synced_end,auto: detected node leaving synced state from RPC samples
+2026-04-04T18:45:15Z,synced_start,auto: detected node becoming synced from RPC samples
+2026-04-04T19:24:08Z,synced_end,auto: detected node leaving synced state from RPC samples
+2026-04-05T04:48:51.732+10:00,ibd_end,auto: detected IBD completion in kaspad log
+2026-04-05T04:48:51.732+10:00,ibd_start,auto: detected IBD start in kaspad log
+2026-04-05T04:51:02.806+10:00,ibd_end,auto: detected IBD completion in kaspad log
+2026-04-05T04:51:20.683+10:00,ibd_start,auto: detected IBD start in kaspad log
+2026-04-05T04:52:21.068+10:00,ibd_end,auto: detected IBD completion in kaspad log
+2026-04-05T05:18:31.051+10:00,pruning_end,auto: detected pruning UTXO update in kaspad log
