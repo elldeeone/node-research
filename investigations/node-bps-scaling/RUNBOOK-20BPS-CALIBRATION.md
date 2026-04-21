@@ -36,6 +36,8 @@ Recommended calibration shape:
   - `investigations/node-bps-scaling/configs/generated/20bps.override.json`
 - validation register row:
   - `20bps` in `investigations/node-bps-scaling/data/manifests/tier-validation-register.csv`
+- optional Hetzner provisioning helper:
+  - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration`
 
 ## Assumptions
 
