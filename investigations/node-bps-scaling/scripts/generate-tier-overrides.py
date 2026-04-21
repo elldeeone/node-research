@@ -30,6 +30,7 @@ INVESTIGATION_ROOT = SCRIPT_DIR.parent
 CONFIG_ROOT = INVESTIGATION_ROOT / "configs"
 GENERATED_ROOT = CONFIG_ROOT / "generated"
 METADATA_PATH = CONFIG_ROOT / "tier-metadata.csv"
+VALIDATION_REGISTER_PATH = INVESTIGATION_ROOT / "data" / "manifests" / "tier-validation-register.csv"
 
 MERGE_DEPTH_DURATION = 3_600
 FINALITY_DURATION = 43_200
@@ -125,6 +126,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate candidate blockrate override files for node-bps-scaling")
     parser.add_argument("--output-dir", type=Path, default=GENERATED_ROOT)
     parser.add_argument("--metadata-path", type=Path, default=METADATA_PATH)
+    parser.add_argument("--validation-register-path", type=Path, default=VALIDATION_REGISTER_PATH)
     return parser.parse_args()
 
 
@@ -132,8 +134,10 @@ def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     args.metadata_path.parent.mkdir(parents=True, exist_ok=True)
+    args.validation_register_path.parent.mkdir(parents=True, exist_ok=True)
 
     metadata_rows: list[dict[str, str | int | float]] = []
+    validation_rows: list[dict[str, str | int | float]] = []
 
     for tier in TIERS:
         blockrate = build_blockrate(tier.nominal_bps)
@@ -164,6 +168,26 @@ def main() -> None:
                 "is_provisional_max": "yes" if tier.is_provisional_max else "no",
             }
         )
+        validation_rows.append(
+            {
+                "tier_slug": tier.slug,
+                "tier_label": tier.label,
+                "candidate_override_file": str(output_path.relative_to(INVESTIGATION_ROOT)),
+                "validation_status": "planned",
+                "nominal_bps": tier.nominal_bps,
+                "target_time_per_block_ms": target_time_ms,
+                "integer_reported_bps": 1000 // target_time_ms,
+                "real_interval_bps": f"{real_interval_bps(target_time_ms):.6f}",
+                "observed_block_rate": "",
+                "observed_tps": "",
+                "bootstrap_health": "",
+                "relay_health": "",
+                "single_downstream_smoke": "",
+                "eight_downstream_smoke": "",
+                "final_report_label": "",
+                "notes": "",
+            }
+        )
 
     fieldnames = [
         "tier_slug",
@@ -189,6 +213,30 @@ def main() -> None:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(metadata_rows)
+
+    validation_fieldnames = [
+        "tier_slug",
+        "tier_label",
+        "candidate_override_file",
+        "validation_status",
+        "nominal_bps",
+        "target_time_per_block_ms",
+        "integer_reported_bps",
+        "real_interval_bps",
+        "observed_block_rate",
+        "observed_tps",
+        "bootstrap_health",
+        "relay_health",
+        "single_downstream_smoke",
+        "eight_downstream_smoke",
+        "final_report_label",
+        "notes",
+    ]
+
+    with args.validation_register_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=validation_fieldnames)
+        writer.writeheader()
+        writer.writerows(validation_rows)
 
 
 if __name__ == "__main__":
