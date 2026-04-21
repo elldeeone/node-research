@@ -1,0 +1,17 @@
+execution_order,plan_id,phase,tier_label,nominal_bps,scenario,run_goal,prune_target,leaf_target,priority,notes
+1,tier-15-calibration,calibration,15 BPS,15,tier-calibration,validate params cadence and scaled load,0,0,required,bootstrap and relay smoke test plus downstream workflow check
+2,tier-15-relay-baseline,long-run,15 BPS,15,Baseline,measure relay-only scaling and prune behavior,3,0,required,primary endurance run for the tier
+3,tier-15-relay-fanout-1,long-run,15 BPS,15,Single-Downstream,measure one-leaf serving penalty,1,1,required,leaf must fully sync
+4,tier-15-relay-fanout-8,long-run,15 BPS,15,Eight-Downstream,measure heavy fanout penalty and prune interaction,2,8,required,all leaves must fully sync
+5,tier-20-calibration,calibration,20 BPS,20,tier-calibration,validate params cadence and scaled load,0,0,required,bootstrap and relay smoke test plus downstream workflow check
+6,tier-20-relay-baseline,long-run,20 BPS,20,Baseline,measure relay-only scaling and prune behavior,3,0,required,primary endurance run for the tier
+7,tier-20-relay-fanout-1,long-run,20 BPS,20,Single-Downstream,measure one-leaf serving penalty,1,1,required,leaf must fully sync
+8,tier-20-relay-fanout-8,long-run,20 BPS,20,Eight-Downstream,measure heavy fanout penalty and prune interaction,2,8,required,all leaves must fully sync
+9,tier-25-calibration,calibration,25 BPS,25,tier-calibration,validate params cadence and scaled load,0,0,required,bootstrap and relay smoke test plus downstream workflow check
+10,tier-25-relay-baseline,long-run,25 BPS,25,Baseline,measure relay-only scaling and prune behavior,3,0,required,primary endurance run for the tier
+11,tier-25-relay-fanout-1,long-run,25 BPS,25,Single-Downstream,measure one-leaf serving penalty,1,1,required,leaf must fully sync
+12,tier-25-relay-fanout-8,long-run,25 BPS,25,Eight-Downstream,measure heavy fanout penalty and prune interaction,2,8,required,all leaves must fully sync
+13,tier-max-calibration,calibration,Validated Max Tier,,tier-calibration,validate params cadence and scaled load,0,0,required,final tier label to be frozen after validation
+14,tier-max-relay-baseline,long-run,Validated Max Tier,,Baseline,measure relay-only scaling and prune behavior,3,0,required,primary endurance run for the tier
+15,tier-max-relay-fanout-1,long-run,Validated Max Tier,,Single-Downstream,measure one-leaf serving penalty,1,1,required,leaf must fully sync
+16,tier-max-relay-fanout-8,long-run,Validated Max Tier,,Eight-Downstream,measure heavy fanout penalty and prune interaction,2,8,required,all leaves must fully sync
