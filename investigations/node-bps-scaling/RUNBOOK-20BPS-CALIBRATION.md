@@ -47,6 +47,41 @@ Recommended calibration shape:
 - all nodes use Rusty Kaspa with `--utxoindex`
 - RPC remains on the default gRPC port unless you intentionally change it
 
+## Bootstrap Wallet Staging
+
+For a brand-new devnet, do not start the tx generator immediately.
+
+Recommended wallet flow:
+
+- `Wallet A`: initial bootstrap mining wallet, later handed over to tx generation
+- `Wallet B`: ongoing miner wallet after the handoff
+
+Recommended sequence:
+
+1. start the bootstrap node
+2. generate `Wallet A`
+3. point the miner at `Wallet A`
+4. leave tx generation off while `Wallet A` accumulates mature coinbase UTXOs
+5. once `Wallet A` reaches the chosen mature-UTXO threshold, stop the miner
+6. switch the miner to `Wallet B`
+7. start tx generation from `Wallet A`
+
+Practical sizing note for `20 BPS`:
+
+- miner-only warmup creates about one new coinbase UTXO per block
+- `20 BPS` for one hour is about `72,000` blocks total
+- after coinbase maturity, that gives a roughly `60k-70k` mature-UTXO staging window, not `200k-300k`
+
+This lines up closely with the current modified `Tx_gen` default inventory rule:
+
+- `target_utxo_count = target_tps * 10`
+- at `6,000 TPS`, the default target inventory is `60,000` UTXOs
+
+If you want a larger txgen inventory than miner-only warmup can provide in the desired time window:
+
+- either extend the miner-only warmup for multiple hours
+- or hand `Wallet A` to `Tx_gen` in `--prepare-only` mode first, with an explicit larger `--target-utxo-count`, then start the real spam run after preparation finishes
+
 ## Variables
 
 Replace these values before running:
@@ -119,9 +154,9 @@ Checks:
 - no immediate consensus mismatch error
 - node listens on the expected P2P and RPC ports
 
-## Step 3. Start Miner And Tx Generation On The Bootstrap Side
+## Step 3. Start Miner On The Bootstrap Side
 
-Reuse the same mining and tx-generation workflow from the previous devnet study, but retarget it to approximately `6k TPS`.
+Reuse the same mining workflow from the previous devnet study, but point it at `Wallet A` first and leave tx generation off during the initial warmup period.
 
 Setup guidance from the earlier work:
 
@@ -132,13 +167,28 @@ For this investigation, prefer the known-good separated setup from the original 
 
 Calibration checks:
 
-- intended tx generation rate is actually attempted
-- bootstrap remains healthy while mining and generating load
+- bootstrap remains healthy while mining
 - observed chain growth matches the intended tier closely enough
+- mature UTXO inventory on `Wallet A` grows toward the chosen handoff threshold
 
 Do not create a new txgen path for this study unless the old one is unusable. Reuse the known-good workflow and record the exact commands you used in calibration notes.
 
-## Step 4. Start The Relay
+## Step 4. Handoff The Bootstrap Wallets
+
+Once the chosen `Wallet A` threshold is reached:
+
+- stop the miner
+- switch the miner to `Wallet B`
+- reserve `Wallet A` for tx generation only
+
+For `20 BPS` calibration, a practical first handoff target is roughly `60k-70k` mature UTXOs on `Wallet A`, which should be achievable after about one hour of miner-only warmup.
+
+If you want to test a larger starting inventory such as `200k-300k` UTXOs:
+
+- mine much longer before the handoff
+- or run `Tx_gen --prepare-only` against `Wallet A` after the handoff until the larger target is reached
+
+## Step 5. Start The Relay
 
 Launch the relay so it keeps the bootstrap as an upstream peer while still serving downstream peers later:
 
@@ -163,7 +213,7 @@ Checks:
 - relay reaches and holds sync
 - relay does not show immediate storage-path distress
 
-## Step 5. Start A Relay Calibration Capture
+## Step 6. Start A Relay Calibration Capture
 
 Run a short capture on the relay with the shared collector while the `20 BPS` load is active:
 
@@ -193,7 +243,22 @@ Calibration capture purpose:
 
 If bootstrap telemetry is needed for ambiguity resolution, use the same shared collector there as well rather than inventing a parallel capture path.
 
-## Step 6. Smoke-Test One Downstream Leaf
+## Step 7. Start Tx Generation On The Bootstrap Side
+
+After the miner handoff is complete and the relay capture is live, start tx generation from `Wallet A`.
+
+Recommended approach:
+
+- first calibration pass: use the current default txgen inventory target for `6,000 TPS`, which is `60,000` UTXOs
+- larger-inventory pass: if needed, run an explicit `--prepare-only --target-utxo-count <N>` stage before the live spam phase
+
+Calibration checks:
+
+- intended tx generation rate is actually attempted
+- bootstrap remains healthy while mining continues to `Wallet B`
+- relay remains healthy while bootstrap load is active
+
+## Step 8. Smoke-Test One Downstream Leaf
 
 Launch one cold leaf pinned to the relay:
 
@@ -218,7 +283,7 @@ Checks:
 
 This is only a smoke test for the calibration tier. Full downstream runs come later.
 
-## Step 7. Verify The Validation Pass Criteria
+## Step 9. Verify The Validation Pass Criteria
 
 The `20 BPS` tier passes calibration only if:
 
@@ -229,7 +294,7 @@ The `20 BPS` tier passes calibration only if:
 - relay remains healthy during the smoke window
 - one downstream leaf can attach and sync normally
 
-## Step 8. Update The Validation Register
+## Step 10. Update The Validation Register
 
 Fill the `20bps` row in:
 

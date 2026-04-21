@@ -101,8 +101,8 @@ require_cmd() {
 resolve_rpc_poller_command() {
   local candidate
   local candidates=(
-    "$SCRIPT_DIR/rpc-poller/target/debug/node-resource-rpc-poller"
     "$SCRIPT_DIR/rpc-poller/target/release/node-resource-rpc-poller"
+    "$SCRIPT_DIR/rpc-poller/target/debug/node-resource-rpc-poller"
   )
 
   if candidate="$(command -v node-resource-rpc-poller 2>/dev/null || true)"; then
@@ -744,12 +744,16 @@ done
 
 [[ "$(uname -s)" == "Linux" ]] || fail "Linux only"
 require_cmd python3
-require_cmd cargo
 require_cmd tar
 require_cmd sha256sum
 require_cmd pgrep
 require_cmd df
 require_cmd lsblk
+
+RPC_POLLER_CMD="$(resolve_rpc_poller_command)"
+if [[ "$RPC_POLLER_CMD" == "cargo" ]]; then
+  require_cmd cargo
+fi
 
 DATA_DIR="$(resolve_path "$DATA_DIR")"
 [[ -d "$DATA_DIR" ]] || fail "data dir not found: $DATA_DIR"
@@ -842,7 +846,6 @@ note "starting host collector"
 CHILD_PIDS+=("$!")
 
 note "starting rpc collector"
-RPC_POLLER_CMD="$(resolve_rpc_poller_command)"
 if [[ "$RPC_POLLER_CMD" == "cargo" ]]; then
   cargo run --manifest-path "$SCRIPT_DIR/rpc-poller/Cargo.toml" -- \
     --url "$RPC_URL" \
