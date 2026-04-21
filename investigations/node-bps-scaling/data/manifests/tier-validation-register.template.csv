@@ -1,0 +1,4 @@
+tier_slug,tier_label,candidate_override_file,validation_status,nominal_bps,target_time_per_block_ms,integer_reported_bps,real_interval_bps,observed_block_rate,observed_tps,bootstrap_health,relay_health,single_downstream_smoke,eight_downstream_smoke,final_report_label,notes
+20bps,20 BPS,configs/generated/20bps.override.json,planned,20,50,20,20.000000,,,,,,,,
+25bps,25 BPS,configs/generated/25bps.override.json,planned,25,40,25,25.000000,,,,,,,,
+max-tier-32bps-31ms-candidate,Validated Max Tier Candidate,configs/generated/max-tier-32bps-31ms-candidate.override.json,planned,32,31,32,32.258065,,,,,,,,
