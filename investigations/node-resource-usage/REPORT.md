@@ -4,6 +4,10 @@ This report characterises Kaspa node behaviour under sustained maximum-throughpu
 
 Across the measured runs, the failing hosts showed severe storage-path distress: high write latency, deep queue depth, and elevated iowait well before memory exhaustion. One host with a weak storage path entered post-prune recovery trouble and was later killed by the kernel out-of-memory handler. A smaller 4-core / 12 GiB host lasted longer under sustained strain, then also ended in an OOM kill. The tested 8 vCPU / 16 GiB Hetzner Cloud host, a standard shared-vCPU instance with local SSD storage costing roughly USD 31 per month, passed direct IBD, sustained synchronised stress, pruning overlap, and serving up to eight simultaneous downstream peers. In the serving runs, the extra load showed up mostly in read traffic, CPU load, and memory use, not in write-path degradation. These results bound one heavy-load case. They do not prove unrestricted public-node behaviour.
 
+## TL;DR
+
+If you're only interested in practical recommendations, jump to the hardware requirements section or the cloud cost envelope. The rest of this report documents the evidence and caveats behind those recommendations.
+
 ## 1. Introduction and scope
 
 During the Kaspadrome period of sustained network load, some node operators on weaker hardware visibly fell out of sync and some exchanges paused Kaspa transactions. The immediate operator question was simple: what hardware keeps a node healthy through that load, especially through pruning windows, and what does it cost to run it in the cloud?
@@ -225,34 +229,43 @@ The penalty was already present with one leaf and grew modestly with eight. The 
 
 Across the full dataset, storage-path metrics deteriorated before the OOM kill in both failure runs. Write await, queue depth, and iowait were the earliest visible warning signs. The serving runs answer a narrower question than the private-node runs: they show the cost of controlled downstream serving on one healthy host class, not unrestricted public-node behaviour. The gap between 4 vCPU / 12 GiB and 8 vCPU / 16 GiB remains unmeasured.
 
-## 5. Operator guidance
-
-This guidance is scoped to the measured workload shape: a non-archival node with the UTXO index enabled, under sustained stress at roughly 3 000 TPS and 10 BPS.
-
-### 5.1. Observed outcomes
+## 5. Observed outcomes
 
 | Outcome | Profile class | Evidence | Meaning |
 | --- | --- | --- | --- |
 | Failed | Weak storage path regardless of CPU/RAM (run 6 class), or severely resource-constrained host (run 7 class) | Runs 6, 7 | OOM kill after post-prune distress or resource exhaustion |
-| Lowest passing profile | 8 vCPU / 16 GiB / local SSD with adequate storage throughput (run 5 class) | Runs 5, 8a–8c | Passed all tested phases, including heavy serving load |
+| Lowest passing profile | 8 vCPU / 16 GiB / local SSD-class storage (run 5 class) | Runs 5, 8a–8c | Passed all tested phases, including heavy serving load |
 
 A host with a weak storage path (run 6: ~49 MB/s sequential write, ~7 MB/s random write) failed even with 12 vCPUs and 25 GiB of RAM. A 4 vCPU / 12 GiB host (run 7) survived longer but still ended in an OOM kill after prolonged operation with high write latency and almost no memory headroom. Either result rules out that host class for sustained operation under this workload.
 
-The 8 vCPU / 16 GiB class with local SSD storage is the lowest profile in the dataset that passed every tested scenario: direct IBD, sustained synchronised stress, six prune windows over 70 hours, and serving eight simultaneous downstream peers. Write await p95 never exceeded 5.04 ms in any measured window. RocksDB stall percentage was 0.00% throughout.
+The 8 vCPU / 16 GiB class with local SSD-class storage is the lowest profile in the dataset that passed every tested scenario: direct IBD, sustained synchronised stress, six prune windows over 70 hours, and serving eight simultaneous downstream peers. Write await p95 never exceeded 5.04 ms in any measured window. RocksDB stall percentage was 0.00% throughout.
 
 The true minimum viable profile may lie somewhere between the failing 4 vCPU / 12 GiB host and the passing 8 vCPU / 16 GiB host, but this dataset does not locate that boundary. What it does establish is that 4 vCPU / 12 GiB is not enough, and that higher CPU and RAM counts did not compensate for a weak storage path in the one case where that was tested.
 
-### 5.2. Practical checklist
+## 6. Recommended hardware requirements
 
-- **Storage first.** Verify the storage path before committing to sustained operation. In this study, the passing host delivered ~2 900 MB/s sequential write and ~60 000 random write IOPS unloaded; the failing Proxmox host delivered ~49 MB/s and ~7 MB/s respectively. The threshold between passing and failing is not precisely located, but a quick `fio` test will show where a given host sits relative to those two observed baselines.
-- **Use 8 vCPU / 16 GiB with local SSD as the reference point.** It is the lowest passing profile in this dataset. Smaller profiles may work, but they are not proven here.
-- **Prefer local SSD over weak or heavily virtualised storage.** The run 6 failure mode is consistent with a weak virtualised storage path. No network-attached or thin-provisioned storage was tested in a passing configuration.
+This guidance is scoped to the measured workload shape: a non-archival node with the UTXO index enabled, under sustained stress at roughly 3 000 TPS and 10 BPS.
+
+### 6.1. Recommended hardware specs
+
+- 8 vCPU
+- 16 GiB RAM
+- local SSD-class storage
+- storage capacity: 320 GiB validated in this study; 500 GiB recommended for operating margin
+- minimum storage throughput under load: 180 MB/s read, 380 MB/s write
+
+### 6.2. Practical checklist
+
+- **Storage first.** In this dataset, weak storage failed even when CPU and RAM were higher than on the passing reference host.
+- **Use 8 vCPU / 16 GiB / local SSD-class storage as the reference point.** It is the lowest profile in this study that passed direct IBD, sustained synchronised stress, repeated prune windows, and controlled downstream serving.
+- **Treat the storage throughput minimum as a heavy-load floor.** The 180 MB/s read and 380 MB/s write figures are anchored to the heaviest healthy cold-IBD window in this dataset. Lower-throughput healthy synced or pruning windows do not contradict that floor because they were asking less of the disk.
+- **Do not treat HDDs as validated by this study.** Every passing run used local SSD-backed cloud storage. No network-attached, thin-provisioned, or spinning-disk configuration was tested in a passing scenario.
 - **Budget for serving overhead.** Serving added load mostly on read throughput, CPU, and RSS. The 8 vCPU / 16 GiB class stayed healthy while serving eight simultaneous downstream peers, but smaller hosts may not.
-- **Monitor write latency and queue depth.** In the failure runs, those were earlier warning signals than RSS alone.
+- **Monitor write latency and queue depth during operation.** In the failure runs, those were earlier warning signals than RSS alone.
 
 The serving tests used a controlled topology with known peer counts and pinned connections. They should not be taken as proof that any 8 vCPU / 16 GiB host will sustain arbitrary public traffic.
 
-## 6. Cloud cost envelope
+## 7. Cloud cost envelope
 
 The table below lists cloud instances that match the lowest passing profile (8 vCPU / 16 GiB), or the closest available equivalent, across Europe, North America, and Asia. Prices were collected on 2026-04-06 from each provider's public pricing page. Only Hetzner CPX42 storage throughput was benchmarked in this study. Other providers' storage paths were not independently tested.
 
@@ -274,7 +287,7 @@ Notes:
 
 No single budget provider covers Europe, North America, and Asia at the benchmark-qualified price point.
 
-## 7. Limitations
+## 8. Limitations
 
 - **One passing host class.** The lowest passing profile is anchored to one host class (Hetzner CPX42) from one provider. The study does not prove that every 8 vCPU / 16 GiB instance from every provider will behave the same way.
 - **No intermediate profiles.** The gap between the failing 4 vCPU / 12 GiB host and the healthy 8 vCPU / 16 GiB host was not filled with 6 vCPU or 8 vCPU / 12 GiB profiles.
@@ -285,13 +298,13 @@ No single budget provider covers Europe, North America, and Asia at the benchmar
 - **Pricing snapshot only.** The cloud cost envelope is based on a single pricing snapshot, and storage throughput on providers other than Hetzner was not benchmarked.
 - **No long-term degradation study.** The longest single run was roughly 70 hours. Effects that show up over weeks or months were not measured.
 
-## 8. Conclusion
+## 9. Conclusion
 
 Under this workload, the failing hosts showed severe storage-path distress before they ran out of memory. High write latency, deep queue depth, and elevated iowait appeared early in both failure cases. On the passing host, those metrics stayed controlled in every tested window.
 
-A standard shared-vCPU cloud instance (8 vCPU / 16 GiB / local SSD, roughly USD 31 per month) passed every tested scenario: initial block download, sustained synchronised stress, six prune windows over 70 hours, and serving eight simultaneous downstream peers. In this dataset, that is the lowest passing profile. The 4 vCPU / 12 GiB host failed.
+A standard shared-vCPU cloud instance (8 vCPU / 16 GiB / local SSD-class storage, roughly USD 31 per month) passed every tested scenario: initial block download, sustained synchronised stress, six prune windows over 70 hours, and serving eight simultaneous downstream peers. In this dataset, that is the lowest passing profile. The 4 vCPU / 12 GiB host failed.
 
-Use 8 vCPU / 16 GiB with local SSD as the reference point, verify storage throughput before deployment, and watch write latency and queue depth for early trouble. Hetzner CPX42 is the only plan in the pricing table whose storage path was benchmarked in this study.
+Use 8 vCPU / 16 GiB with local SSD-class storage as the reference point, verify the storage path before deployment, and watch write latency and queue depth for early trouble. Hetzner CPX42 is the only plan in the pricing table whose storage path was benchmarked in this study.
 
 ## Appendix A. Precursor runs
 
