@@ -6,7 +6,7 @@ Across the measured runs, the failing hosts showed severe storage-path distress:
 
 ## TL;DR
 
-If you're only interested in practical recommendations, jump to the hardware requirements section or the cloud cost envelope. The rest of this report documents the evidence and caveats behind those recommendations.
+If you're only interested in practical recommendations, jump to the [hardware requirements section](#6-recommended-hardware-requirements) or the [cloud cost envelope](#7-cloud-cost-envelope). The rest of this report documents the evidence and caveats behind those recommendations.
 
 ## 1. Introduction and scope
 
