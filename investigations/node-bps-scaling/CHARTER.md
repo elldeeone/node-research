@@ -62,7 +62,12 @@ Working throughput targets should scale with BPS:
 - `25 BPS` -> about `7.5k TPS`
 - `Validated Max Tier` -> the highest practical equivalent after config validation
 
-The exact name of the final tier remains provisional until the custom override parameters are validated. If the cleanest final label is a target-time label such as `31 ms target time`, the report should use that exact validated wording rather than forcing a premature `32 BPS` claim.
+The exact validated label of any non-exact millisecond tier should remain provisional until calibration freezes it. At the moment, the current candidate set suggests that at least these tiers need special care:
+
+- nominal `15 BPS` currently maps to candidate `66 ms`
+- the provisional max tier currently maps to candidate `31 ms`
+
+If the cleanest final label is a target-time label such as `66 ms target time` or `31 ms target time`, the report should use that exact validated wording rather than forcing a premature precision claim.
 
 ## Scenario Families
 

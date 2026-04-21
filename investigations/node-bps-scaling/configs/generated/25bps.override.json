@@ -1,0 +1,14 @@
+{
+  "blockrate": {
+    "target_time_per_block": 40,
+    "ghostdag_k": 288,
+    "past_median_time_sample_rate": 250,
+    "difficulty_sample_rate": 100,
+    "max_block_parents": 16,
+    "mergeset_size_limit": 512,
+    "merge_depth": 90000,
+    "finality_depth": 1080000,
+    "pruning_depth": 2700000,
+    "coinbase_maturity": 2500
+  }
+}

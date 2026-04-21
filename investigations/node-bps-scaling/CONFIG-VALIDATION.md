@@ -4,7 +4,7 @@
 
 Validate each custom BPS tier before any long capture begins.
 
-The most important output of this checklist is a trusted label for the final ladder tier. Until then, refer to it as `Validated Max Tier`.
+The most important output of this checklist is a trusted final label for every tier that does not map cleanly to whole milliseconds. Until then, refer to the provisional top rung as `Validated Max Tier`.
 
 ## Tier Validation Workflow
 
@@ -38,6 +38,11 @@ For the provisional max tier, do not assume the final public-facing name until t
 - record the observed rate and the exact measurement window
 
 If the practical cadence and the nominal BPS label diverge, prefer the exact validated wording in later report text.
+
+Current first-pass candidates already suggest this issue exists for:
+
+- nominal `15 BPS` -> candidate `66 ms`
+- nominal `32 BPS` -> candidate `31 ms`
 
 ## 4. Verify Load Scaling
 
