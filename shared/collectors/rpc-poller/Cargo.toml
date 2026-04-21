@@ -1,0 +1,11 @@
+[package]
+name = "node-resource-rpc-poller"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+chrono = "0.4.31"
+kaspa-grpc-client = "0.15.0"
+kaspa-rpc-core = "0.15.0"
+tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread", "signal", "time"] }

@@ -3,6 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PARSERS_DIR="$REPO_ROOT/shared/parsers"
+SCHEMAS_DIR="$REPO_ROOT/shared/schemas"
 RUNS_DIR="$SCRIPT_DIR/runs"
 BUNDLES_DIR="$SCRIPT_DIR/bundles"
 
@@ -314,16 +316,16 @@ wait_for_rollover_capture_ready() {
 
 finalize_run_artifacts() {
   note "parsing kaspad perf log"
-  python3 "$SCRIPT_DIR/parse-kaspad-perf.py" --input "$KASPAD_LOG" --output "$NODE_METRICS"
+  python3 "$PARSERS_DIR/parse-kaspad-perf.py" --input "$KASPAD_LOG" --output "$NODE_METRICS"
 
   if [[ -s "$IOSTAT_JSONL" ]]; then
     note "parsing iostat json"
-    python3 "$SCRIPT_DIR/parse-iostat-json.py" --input "$IOSTAT_JSONL" --output "$IOSTAT_METRICS"
+    python3 "$PARSERS_DIR/parse-iostat-json.py" --input "$IOSTAT_JSONL" --output "$IOSTAT_METRICS"
   fi
 
   if [[ -d "$ROCKSDB_DIR" && -f "$ROCKSDB_DIR/sources.csv" ]]; then
     note "parsing RocksDB logs"
-    python3 "$SCRIPT_DIR/parse-rocksdb-logs.py" --input-dir "$ROCKSDB_DIR" --output "$ROCKSDB_EVENTS"
+    python3 "$PARSERS_DIR/parse-rocksdb-logs.py" --input-dir "$ROCKSDB_DIR" --output "$ROCKSDB_EVENTS"
   fi
 
   note "extracting events"
@@ -336,7 +338,7 @@ finalize_run_artifacts() {
   else
     note "rpc metrics missing; events will be log-only"
   fi
-  python3 "$SCRIPT_DIR/extract-kaspad-events.py" "${EVENT_ARGS[@]}"
+  python3 "$PARSERS_DIR/extract-kaspad-events.py" "${EVENT_ARGS[@]}"
 
   NODE_VERSION="$(first_successful_rpc_field "$RPC_METRICS" "server_version")"
   if [[ -z "$NODE_VERSION" ]]; then
@@ -397,7 +399,7 @@ finalize_run_artifacts() {
   fi
 
   note "rendering metadata"
-  python3 "$SCRIPT_DIR/render-metadata.py" "${METADATA_ARGS[@]}"
+  python3 "$PARSERS_DIR/render-metadata.py" "${METADATA_ARGS[@]}"
 
   SUMMARY_ARGS=(
     --metadata "$METADATA_JSON"
@@ -420,7 +422,7 @@ finalize_run_artifacts() {
   fi
 
   note "summarizing run"
-  python3 "$SCRIPT_DIR/summarize-study.py" "${SUMMARY_ARGS[@]}"
+  python3 "$PARSERS_DIR/summarize-study.py" "${SUMMARY_ARGS[@]}"
 
   note "writing checksums"
   sha256_files "$RUN_DIR"
@@ -794,7 +796,7 @@ mkdir -p "$RUNS_DIR" "$BUNDLES_DIR"
 RUN_DIR="$RUNS_DIR/$RUN_ID"
 mkdir -p "$RUN_DIR"
 
-cp "$SCRIPT_DIR/events.template.csv" "$RUN_DIR/events.csv"
+cp "$SCHEMAS_DIR/events.template.csv" "$RUN_DIR/events.csv"
 printf '%s\n' "${MONITOR_FLAGS[@]}" > "$RUN_DIR/monitor-flags.txt"
 if [[ "$ARCHIVAL" -eq 1 ]]; then
   printf '%s\n' "--archival" >> "$RUN_DIR/monitor-flags.txt"
