@@ -54,12 +54,21 @@ The helper script supports these scenario profiles:
 
 - `baseline`
   - bootstrap + relay
+- `leaf1`
+  - leaf1 only
 - `single`
   - bootstrap + relay + leaf1
 - `eight`
   - bootstrap + relay + leaf1..leaf8
 - `calibration`
-  - alias for `single`
+  - alias for `baseline`
+
+The intended live sequence is staged:
+
+- provision `calibration` first so only bootstrap + relay are billable during miner warmup
+- provision `leaf1` later, only after tx generation is already running and the downstream smoke test is about to begin
+
+The helper now skips creating any server that already exists, so rerunning it with a larger profile is safe for incremental expansion.
 
 ## Safety
 
@@ -78,7 +87,7 @@ For the first live infra pass, use:
 - tier: `20bps`
 - profile: `calibration`
 
-That provisions exactly the machines needed for the `20 BPS` calibration runbook without jumping straight to the full eight-leaf cost envelope.
+That provisions only the machines needed for the bootstrap warmup and relay validation window, without paying for an idle downstream leaf during txgen staging.
 
 ## Suggested First Command
 
@@ -96,6 +105,15 @@ Real create:
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile calibration \
+  --apply
+```
+
+Later, when tx generation is already live and you are ready for the downstream smoke:
+
+```bash
+investigations/node-bps-scaling/scripts/hcloud-provision.sh \
+  --tier 20bps \
+  --profile leaf1 \
   --apply
 ```
 

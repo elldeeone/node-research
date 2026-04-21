@@ -24,9 +24,10 @@ Defaults:
 
 Profiles:
   baseline     bootstrap + relay
+  leaf1        leaf1 only
   single       bootstrap + relay + leaf1
   eight        bootstrap + relay + leaf1..leaf8
-  calibration  alias for single
+  calibration  alias for baseline
 
 Modes:
   plan         print the commands only
@@ -74,10 +75,13 @@ server_names_for_profile() {
   local profile="$2"
 
   case "$profile" in
-    baseline)
+    baseline|calibration)
       printf '%s\n' "nbs-${tier}-bootstrap-01" "nbs-${tier}-relay-01"
       ;;
-    single|calibration)
+    leaf1)
+      printf '%s\n' "nbs-${tier}-leaf-01"
+      ;;
+    single)
       printf '%s\n' "nbs-${tier}-bootstrap-01" "nbs-${tier}-relay-01" "nbs-${tier}-leaf-01"
       ;;
     eight)
@@ -221,6 +225,11 @@ for name in "${SERVERS[@]}"; do
     role="relay"
   elif [[ "$name" == *"leaf"* ]]; then
     role="leaf"
+  fi
+
+  if hcloud server describe "$name" >/dev/null 2>&1; then
+    note "server already exists, skipping create: $name"
+    continue
   fi
 
   run_or_print \

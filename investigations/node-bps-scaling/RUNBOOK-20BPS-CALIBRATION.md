@@ -26,7 +26,7 @@ Recommended calibration shape:
 
 - bootstrap and relay both use the same `20bps.override.json`
 - relay is the node we inspect most closely
-- one downstream leaf is enough as a topology smoke test
+- one downstream leaf is enough as a topology smoke test, but it should be provisioned only after tx generation is already running
 - target load is about `6k TPS`
 - run long enough to verify cadence, sync health, and basic stability
 
@@ -37,7 +37,10 @@ Recommended calibration shape:
 - validation register row:
   - `20bps` in `investigations/node-bps-scaling/data/manifests/tier-validation-register.csv`
 - optional Hetzner provisioning helper:
-  - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration`
+  - initial bootstrap + relay only:
+    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration`
+  - later leaf-only add-on:
+    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile leaf1`
 
 ## Assumptions
 
@@ -264,7 +267,18 @@ Calibration checks:
 - bootstrap remains healthy while mining continues to `Wallet B`
 - relay remains healthy while bootstrap load is active
 
+Only after these checks look healthy should you provision the downstream leaf.
+
 ## Step 8. Smoke-Test One Downstream Leaf
+
+If you are using Hetzner, provision the leaf only at this point:
+
+```bash
+investigations/node-bps-scaling/scripts/hcloud-provision.sh \
+  --tier 20bps \
+  --profile leaf1 \
+  --apply
+```
 
 Launch one cold leaf pinned to the relay:
 
