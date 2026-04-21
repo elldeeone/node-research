@@ -1,5 +1,4 @@
 tier_slug,tier_label,nominal_bps,target_time_per_block_ms,integer_reported_bps,real_interval_bps,exact_ms_compatible,ghostdag_k,past_median_time_sample_rate,difficulty_sample_rate,max_block_parents,mergeset_size_limit,merge_depth,finality_depth,pruning_depth,coinbase_maturity,is_provisional_max
-15bps,15 BPS,15,66,15,15.151515,no,179,150,60,16,358,54000,648000,1620000,1500,no
 20bps,20 BPS,20,50,20,20.000000,yes,234,200,80,16,468,72000,864000,2160000,2000,no
 25bps,25 BPS,25,40,25,25.000000,yes,288,250,100,16,512,90000,1080000,2700000,2500,no
 max-tier-32bps-31ms-candidate,Validated Max Tier Candidate,32,31,32,32.258065,no,362,320,128,16,512,115200,1382400,3456000,3200,yes

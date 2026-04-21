@@ -35,7 +35,6 @@ For this investigation, candidate values are derived from current upstream conse
 
 That means some nominal tiers do not map exactly:
 
-- nominal `15 BPS` becomes candidate `66 ms`
 - nominal `32 BPS` becomes candidate `31 ms`
 
 The code still reports integer BPS from `1000 / target_time_per_block`, so these candidates are still plausible tier labels for planning, but calibration must freeze the final report wording.

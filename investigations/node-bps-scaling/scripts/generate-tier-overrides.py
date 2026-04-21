@@ -84,7 +84,6 @@ class Tier:
 
 
 TIERS = [
-    Tier(nominal_bps=15, slug="15bps", label="15 BPS"),
     Tier(nominal_bps=20, slug="20bps", label="20 BPS"),
     Tier(nominal_bps=25, slug="25bps", label="25 BPS"),
     Tier(nominal_bps=32, slug="max-tier-32bps-31ms-candidate", label="Validated Max Tier Candidate", is_provisional_max=True),
