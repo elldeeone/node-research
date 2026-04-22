@@ -20,7 +20,13 @@ This runbook is intentionally conservative about tooling:
 
 ## Scope
 
-This is a calibration run, not a publishable endurance run.
+This document started as the calibration runbook, but it now also records the locked profile for the first proper `20 BPS Baseline` run.
+
+Current status:
+
+- `20 BPS` is baseline-ready
+- the relay baseline can start on the locked profile below
+- downstream smoke is still pending and should be completed before `Single-Downstream` and `Eight-Downstream`
 
 Recommended calibration shape:
 
@@ -29,6 +35,37 @@ Recommended calibration shape:
 - one downstream leaf is enough as a topology smoke test, but it should be provisioned only after tx generation is already running
 - target load is about `6k TPS`
 - run long enough to verify cadence, sync health, and basic stability
+
+## Locked 20 BPS Launch Profile
+
+The current canonical `20 BPS` profile is:
+
+- bootstrap miner: `-t 2` during active load windows
+- helper miner on `10.0.4.10`: `-t 1`
+- txgen host: `10.0.4.10`
+- txgen wallet: `Wallet B`
+- mining wallet: `Wallet A`
+- txgen backpressure flags:
+  - `--max-inflight 6000`
+  - `--client-pool-size 8`
+  - `--mempool-high-watermark 650000`
+  - `--mempool-resume-watermark 450000`
+  - `--timeout-cooldown-ms 2000`
+
+Observed outcome from the best calibration pass:
+
+- bootstrap: `20.44 BPS`
+- relay: `20.43 BPS`
+- overall processed load: `~5726 tx/s`
+- active txgen phases held near `6k`
+- relay RSS max: `5.49 GiB`
+- no relay OOM
+
+Interpretation:
+
+- txgen uses mempool backpressure rather than brute-force submit storms
+- the node keeps processing backlog while txgen is paused at the high watermark
+- the first proper `Baseline` run should reuse this exact profile unless a new blocker appears
 
 ## Inputs
 
@@ -54,10 +91,10 @@ Recommended calibration shape:
 
 For a brand-new devnet, do not start the tx generator immediately.
 
-Recommended wallet flow:
+Recommended wallet flow for a fresh network:
 
-- `Wallet A`: primary tx generation wallet; mine into it until it reaches the desired mature-UTXO band
-- `Wallet B`: parking wallet for ongoing mining whenever `Wallet A` is reserved for tx generation
+- `Wallet A`: first staged wallet; mine into it until it reaches the desired mature-UTXO band
+- `Wallet B`: second wallet used after the first cutover, either for continued mining or later tx generation depending on which wallet ends up with the better runway and scan behavior
 
 Recommended sequence:
 
@@ -67,8 +104,9 @@ Recommended sequence:
 4. leave tx generation off while `Wallet A` accumulates mature coinbase UTXOs
 5. once `Wallet A` reaches the chosen mature-UTXO threshold, stop the miner
 6. switch the miner to `Wallet B`
-7. start tx generation from `Wallet A`
-8. if `Wallet A` later needs more runway, stop tx generation, point the miner back at `Wallet A`, top it back up into band, then switch mining back to `Wallet B`
+7. evaluate which wallet is the better txgen candidate once both wallets have real inventory
+8. reserve the better txgen wallet for tx generation and use the other one for ongoing mining
+9. if the chosen mining wallet later needs more runway, stop tx generation, top it back up, and cut over again
 
 Practical sizing note for `20 BPS`:
 
@@ -84,13 +122,13 @@ This lines up closely with the current modified `Tx_gen` default inventory rule:
 
 Preferred handoff band for this investigation:
 
-- use `Wallet A` for tx generation only after it reaches roughly `300k-500k` mature UTXOs
-- if it starts below that band, mine into `Wallet A` longer before the first cutover
-- if it falls back below that band later, pause tx generation and top `Wallet A` back up by temporarily mining into it again
+- do not promote a txgen wallet until it reaches roughly `300k-500k` mature UTXOs
+- if it starts below that band, mine into it longer before the first real cutover
+- if it falls back below that band later, pause tx generation and top the mining wallet back up before switching again
 
 Operational preference:
 
-- prefer controlled miner top-ups into `Wallet A` over large `Tx_gen --prepare-only` expansion stages
+- prefer controlled miner top-ups into the current mining wallet over large `Tx_gen --prepare-only` expansion stages
 - avoid promoting a very large long-running mining wallet directly into tx generation duty without first checking wallet-scan latency
 
 ## Variables
@@ -106,11 +144,16 @@ BOOTSTRAP_HOST=bootstrap.example
 BOOTSTRAP_P2P=${BOOTSTRAP_HOST}:16111
 BOOTSTRAP_RPC=127.0.0.1:16110
 BOOTSTRAP_DATA=/var/lib/kaspa-bootstrap-20bps
+BOOTSTRAP_MINER_THREADS_ACTIVE=2
+BOOTSTRAP_MINER_THREADS_STANDBY=3
 
 RELAY_HOST=relay.example
 RELAY_P2P=${RELAY_HOST}:16111
 RELAY_RPC=127.0.0.1:16110
 RELAY_DATA=/var/lib/kaspa-relay-20bps
+
+HELPER_HOST=10.0.4.10
+HELPER_MINER_THREADS=1
 
 LEAF1_HOST=leaf1.example
 LEAF1_DATA=/var/lib/kaspa-leaf1-20bps
@@ -165,9 +208,9 @@ Checks:
 - no immediate consensus mismatch error
 - node listens on the expected P2P and RPC ports
 
-## Step 3. Start Miner On The Bootstrap Side
+## Step 3. Start Miner Warmup On The Bootstrap Side
 
-Reuse the same mining workflow from the previous devnet study, but point it at `Wallet A` first and leave tx generation off during the initial warmup period.
+Reuse the same mining workflow from the previous devnet study, but point it at the first staged wallet and leave tx generation off during the initial warmup period.
 
 Setup guidance from the earlier work:
 
@@ -176,34 +219,39 @@ Setup guidance from the earlier work:
 
 For this investigation, prefer the known-good separated setup from the original study rather than creating a fresh test harness here.
 
-Calibration checks:
+Warmup checks:
 
 - bootstrap remains healthy while mining
 - observed chain growth matches the intended tier closely enough
-- mature UTXO inventory on `Wallet A` grows toward the chosen handoff threshold
+- mature UTXO inventory on the staged wallet grows toward the chosen handoff threshold
 - miner-only warmup lasts at least two hours before the first txgen handoff
-- `Wallet A` is brought into the preferred `300k-500k` mature-UTXO band before the proper txgen run
+- the intended txgen wallet is brought into the preferred `300k-500k` mature-UTXO band before the proper txgen run
 
 Do not create a new txgen path for this study unless the old one is unusable. Reuse the known-good workflow and record the exact commands you used in calibration notes.
 
-## Step 4. Handoff The Bootstrap Wallets
+## Step 4. Handoff The Wallet Roles
 
-Once the chosen `Wallet A` threshold is reached:
+Once the chosen staging threshold is reached:
 
 - stop the miner
-- switch the miner to `Wallet B`
-- reserve `Wallet A` for tx generation only
+- reserve the better-scanning high-runway wallet for tx generation
+- switch mining to the other wallet
 
-For `20 BPS` calibration, the default handoff policy is:
+For `20 BPS`, the generic handoff policy is:
 
-- mine to `Wallet A` for at least two hours before the first cutover
+- mine to the first staged wallet for at least two hours before the first cutover
 - treat roughly `120k-140k` mature UTXOs as a minimum smoke-test threshold, not the preferred run threshold
-- do not start the proper txgen calibration until `Wallet A` is in the `300k-500k` mature-UTXO band
+- do not start the proper txgen calibration until the intended txgen wallet is in the `300k-500k` mature-UTXO band
 
-If `Wallet A` is below the preferred band:
+For the currently validated live network, the winning assignment is:
 
-- keep mining into `Wallet A` longer before the first handoff
-- or, after a later spam attempt drains it, switch mining back onto `Wallet A` until it returns to band
+- `Wallet B` for tx generation
+- `Wallet A` for ongoing mining
+
+If the intended txgen wallet is below the preferred band:
+
+- keep mining into the current mining wallet longer before the next handoff
+- or, after a later spam attempt drains the txgen wallet, stop tx generation and top the mining wallet back up before switching roles again
 
 Do not assume that the current miner wallet is automatically the best txgen wallet. A wallet that has been mined into for a very long time may become slow to scan and awkward for txgen startup.
 
@@ -232,7 +280,7 @@ Checks:
 - relay reaches and holds sync
 - relay does not show immediate storage-path distress
 
-## Step 6. Start A Relay Calibration Capture
+## Step 6. Start The Relay Capture
 
 Run a short capture on the relay with the shared collector while the `20 BPS` load is active:
 
@@ -262,28 +310,43 @@ Calibration capture purpose:
 
 If bootstrap telemetry is needed for ambiguity resolution, use the same shared collector there as well rather than inventing a parallel capture path.
 
-## Step 7. Start Tx Generation On The Bootstrap Side
+## Step 7. Start The Locked Load Profile
 
-After the miner handoff is complete and the relay capture is live, start tx generation from `Wallet A`.
+After the wallet handoff is complete and the relay capture is live, start the locked `20 BPS` load profile.
 
-Recommended approach:
+Official active-load profile:
 
-- use the current `6,000 TPS` txgen profile, but only after `Wallet A` has been staged into the `300k-500k` mature-UTXO band
-- if a spam pass materially depletes `Wallet A`, stop tx generation and top it back up by mining into `Wallet A` again before the next pass
+- bootstrap miner at `-t 2`
+- helper miner on `10.0.4.10` at `-t 1`
+- txgen on `10.0.4.10`
+- txgen from `Wallet B`
+- mining to `Wallet A`
 
-Calibration checks:
+Locked txgen flag set:
 
-- intended tx generation rate is actually attempted
-- bootstrap remains healthy while mining continues to `Wallet B`
-- relay remains healthy while bootstrap load is active
+- `--tps 6000`
+- `--client-pool-size 8`
+- `--max-inflight 6000`
+- `--mempool-high-watermark 650000`
+- `--mempool-resume-watermark 450000`
+- `--timeout-cooldown-ms 2000`
 
-Optional calibration lever if accepted block rate sags under txgen load:
+Use the tuned devnet-support / workspace txgen build that already includes:
 
-- add a second miner on the helper host while keeping the bootstrap miner running locally
-- use this only as a calibration experiment to see whether accepted BPS stays nearer the intended tier under txgen pressure
-- record clearly whether the run used one miner or two, because this changes how the tier should be interpreted
+- devnet network support
+- separate startup/runtime RPC timeout handling
+- large-wallet refresh tuning
+- mempool backpressure controls
 
-Only after these checks look healthy should you provision the downstream leaf.
+Baseline launch checks:
+
+- intended tx generation rate is actually attempted on the helper host
+- bootstrap accepted block rate stays near `20 BPS`
+- relay accepted block rate closely tracks the bootstrap
+- mempool stays bounded by the backpressure window rather than pinning indefinitely
+- relay remains healthy while load is active
+
+Only after these checks still look healthy should you provision the downstream leaf.
 
 ## Step 8. Smoke-Test One Downstream Leaf
 
@@ -319,15 +382,18 @@ Checks:
 
 This is only a smoke test for the calibration tier. Full downstream runs come later.
 
-## Step 9. Verify The Validation Pass Criteria
+## Step 9. Verify Baseline-Ready Criteria
 
-The `20 BPS` tier passes calibration only if:
+The `20 BPS` tier is baseline-ready only if:
 
 - bootstrap and relay start cleanly
 - observed cadence is acceptably close to the intended tier
 - the intended scaled load is sustained closely enough
 - bootstrap is not the obvious bottleneck
 - relay remains healthy during the smoke window
+
+The tier becomes fully scenario-ready only after:
+
 - one downstream leaf can attach and sync normally
 
 ## Step 10. Update The Validation Register
@@ -351,18 +417,19 @@ At minimum, update:
 
 Use concise values so the register stays easy to scan:
 
-- `validation_status`: `passed`, `revise`, `blocked`
+- `validation_status`: `baseline-ready`, `passed`, `revise`, `blocked`
 - `bootstrap_health`: `healthy`, `borderline`, `bottleneck`
 - `relay_health`: `healthy`, `borderline`, `failed`
 - `single_downstream_smoke`: `passed`, `failed`, `not-run`
 
-## If 20 BPS Passes
+## If 20 BPS Is Baseline-Ready
 
 Proceed to:
 
-1. freeze the `20 BPS` report label
-2. prepare the publishable `20 BPS Baseline` endurance run
-3. then move to `25 BPS` calibration
+1. freeze the `20 BPS` report label and locked profile
+2. start the publishable `20 BPS Baseline` endurance run
+3. complete the downstream smoke before `Single-Downstream`
+4. then move to `25 BPS` calibration
 
 ## If 20 BPS Fails
 

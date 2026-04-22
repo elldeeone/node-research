@@ -69,6 +69,8 @@ If bootstrap becomes the bottleneck here, do not proceed to a long relay run.
 - validate the simultaneous downstream workflow needed for the eight-leaf scenario
 - confirm the relay remains the sole downstream source
 
+This is required before downstream scenario runs, but it does not have to block the first `Baseline` endurance run once the tier is otherwise healthy.
+
 ## 8. Freeze Tier Metadata
 
 For every validated tier, record:
@@ -84,13 +86,17 @@ For every validated tier, record:
 
 ## Validation Pass Criteria
 
-A tier is ready for long runs only if:
+A tier is baseline-ready if:
 
 - bootstrap and relay start cleanly
 - observed cadence is close enough to the intended tier
 - scaled synthetic load is sustained
 - bootstrap is not the clear limiting factor
 - relay stays healthy during the smoke window
+
+A tier is fully scenario-ready if:
+
+- it is already baseline-ready
 - downstream workflows attach successfully
 
 ## Validation Fail Criteria

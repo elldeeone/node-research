@@ -9,7 +9,7 @@ LOG_FILE="${LOG_DIR}/remote-miner-wallet.log"
 PID_FILE="${BASE_DIR}/remote-miner-wallet.pid"
 RPC_HOST="${RPC_HOST:-127.0.0.1}"
 RPC_PORT="${RPC_PORT:-26610}"
-MINER_THREADS="${MINER_THREADS:-2}"
+MINER_THREADS="${MINER_THREADS:-1}"
 
 usage() {
   cat <<'EOF'
@@ -21,7 +21,7 @@ Usage:
 Environment:
   RPC_HOST        bootstrap RPC host reachable from this helper (default: 127.0.0.1)
   RPC_PORT        bootstrap RPC port reachable from this helper (default: 26610)
-  MINER_THREADS   miner thread count (default: 2)
+  MINER_THREADS   miner thread count (default: 1)
 
 Required env file:
   ~/node-bps-scaling/remote-miner-wallet.env

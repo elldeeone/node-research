@@ -36,8 +36,9 @@ How do CPU, memory, storage, and network requirements change as BPS rises when o
 
 ### Roles
 
-- `Bootstrap`: hosts the custom devnet, local miner, and tx generation
+- `Bootstrap`: hosts the custom devnet and primary local miner
 - `Relay`: the node under test on the `CPX42` reference host
+- `Helpers`: optional off-box miner and tx generation hosts used when needed to hold tier cadence without turning the bootstrap into the dominant bottleneck
 - `Leaves`: downstream nodes that sync only from the relay during downstream scenarios
 
 ### Why This Topology
@@ -45,6 +46,7 @@ How do CPU, memory, storage, and network requirements change as BPS rises when o
 - it produced the cleanest evidence in the earlier work
 - it reduced ambiguity caused by mixing bootstrap duty and measured serving duty
 - it gives the relay a fair chance to show its own scaling behavior
+- the validated `20 BPS` profile already showed that off-box helpers can be the cleaner way to hold the target tier than overloading the bootstrap host itself
 
 ## Tier Ladder
 
@@ -144,6 +146,22 @@ Each tier requires a short calibration phase that confirms:
 - the bootstrap remains healthy
 - the relay can sync and stay current
 - downstream leaves can attach and sync in the downstream scenarios
+
+For `20 BPS`, the current locked calibration outcome is:
+
+- bootstrap local miner at `-t 2`
+- helper miner at `-t 1`
+- tx generation on `10.0.4.10`
+- txgen wallet `Wallet B`
+- mining wallet `Wallet A`
+- txgen backpressure profile:
+  - `--max-inflight 6000`
+  - `--client-pool-size 8`
+  - `--mempool-high-watermark 650000`
+  - `--mempool-resume-watermark 450000`
+  - `--timeout-cooldown-ms 2000`
+
+That profile is baseline-ready and should be treated as the canonical starting point for the first proper `20 BPS Baseline` run.
 
 ## Run Order
 
