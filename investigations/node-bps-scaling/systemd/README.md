@@ -14,6 +14,7 @@ The intended operating model is:
 - bootstrap RPC is public on `16610`
 - bootstrap, relay, and leaves talk over public P2P on `16611`
 - helper miner and txgen talk directly to bootstrap public RPC
+- helper miner is intentionally capped with `CPUQuota=60%` for the validated `20bps` profile
 - txgen is normally installed as a service but only started during active load windows
 
 ## Expected Env Files
@@ -81,6 +82,12 @@ Example:
 ```bash
 MINER_ADDRESS=kaspadev:...
 MINER_THREADS=1
+```
+
+The checked-in helper miner unit also applies:
+
+```bash
+CPUQuota=60%
 ```
 
 Helper txgen wallet:

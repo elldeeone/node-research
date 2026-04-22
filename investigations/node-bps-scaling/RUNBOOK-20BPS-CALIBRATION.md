@@ -47,7 +47,7 @@ Recommended calibration shape:
 The current canonical `20 BPS` profile is:
 
 - bootstrap miner: `-t 2` during active load windows
-- helper miner on `10.0.4.10`: `-t 1`
+- helper miner on `10.0.4.10`: `-t 1` with `CPUQuota=60%`
 - txgen host: `10.0.4.10`
 - txgen wallet: `Wallet B`
 - mining wallet: `Wallet A`
@@ -58,19 +58,20 @@ The current canonical `20 BPS` profile is:
   - `--mempool-resume-watermark 450000`
   - `--timeout-cooldown-ms 2000`
 
-Observed outcome from the best calibration pass:
+Observed outcome from the best current calibration pass:
 
-- bootstrap: `20.44 BPS`
-- relay: `20.43 BPS`
-- overall processed load: `~5726 tx/s`
-- active txgen phases held near `6k`
-- relay RSS max: `5.49 GiB`
+- bootstrap: `19.84 BPS`
+- relay: `19.83 BPS`
+- helper txgen remained in the intended `~6k TPS` submit band without timeout growth
+- bootstrap RSS max: `4.79 GiB`
+- relay RSS max: `3.24 GiB`
 - no relay OOM
 
 Interpretation:
 
 - txgen uses mempool backpressure rather than brute-force submit storms
 - the node keeps processing backlog while txgen is paused at the high watermark
+- the clean public-IP, service-based topology needed an in-between miner profile rather than the earlier integer-only `2 + 1`
 - the first proper `Baseline` run should reuse this exact profile unless a new blocker appears
 
 ## Inputs
@@ -372,7 +373,7 @@ After the wallet handoff is complete and the relay capture is live, start the lo
 Official active-load profile:
 
 - bootstrap miner at `-t 2`
-- helper miner on `10.0.4.10` at `-t 1`
+- helper miner on `10.0.4.10` at `-t 1` with `CPUQuota=60%`
 - txgen on `10.0.4.10`
 - txgen from `Wallet B`
 - mining to `Wallet A`
