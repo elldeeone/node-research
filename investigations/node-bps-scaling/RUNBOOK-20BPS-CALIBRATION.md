@@ -75,9 +75,29 @@ Interpretation:
   - `20bps` in `investigations/node-bps-scaling/data/manifests/tier-validation-register.csv`
 - optional Hetzner provisioning helper:
   - initial bootstrap + relay only:
-    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration`
+    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration --bootstrap-wan-cidr "$BOOTSTRAP_WAN_CIDR"`
   - later leaf-only add-on:
     - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile leaf1`
+
+## Bootstrap Public RPC Policy
+
+The helper host on your WAN must reach the bootstrap directly over the public internet.
+
+Do not depend on an ad hoc SSH tunnel for the official run path.
+
+The intended setup is:
+
+- bootstrap `kaspad` listens for gRPC on `0.0.0.0:16110`
+- Hetzner firewall rules allow that gRPC port only from your WAN CIDR
+- the same allowlist can also gate SSH to the bootstrap
+- relay and leaves still use the Hetzner private network for node-to-node traffic
+
+Operational rule:
+
+- helper `10.0.4.10` talks to `grpc://$BOOTSTRAP_RPC_PUBLIC_HOST:$BOOTSTRAP_RPC_PUBLIC_PORT`
+- bootstrap and relay local collectors still use loopback RPC on their own hosts
+- no SSH tunnel is part of the baseline runbook
+- if your WAN CIDR changes, rebuild the managed bootstrap firewall before the next run
 
 ## Assumptions
 
@@ -142,7 +162,10 @@ OVERRIDE_FILE=/absolute/path/to/20bps.override.json
 
 BOOTSTRAP_HOST=bootstrap.example
 BOOTSTRAP_P2P=${BOOTSTRAP_HOST}:16111
-BOOTSTRAP_RPC=127.0.0.1:16110
+BOOTSTRAP_RPC_LOCAL=127.0.0.1:16110
+BOOTSTRAP_RPC_PUBLIC_HOST=bootstrap-public-ip.example
+BOOTSTRAP_RPC_PUBLIC_PORT=16110
+BOOTSTRAP_WAN_CIDR=203.0.113.10/32
 BOOTSTRAP_DATA=/var/lib/kaspa-bootstrap-20bps
 BOOTSTRAP_MINER_THREADS_ACTIVE=2
 BOOTSTRAP_MINER_THREADS_STANDBY=3
@@ -154,6 +177,7 @@ RELAY_DATA=/var/lib/kaspa-relay-20bps
 
 HELPER_HOST=10.0.4.10
 HELPER_MINER_THREADS=1
+HELPER_BOOTSTRAP_RPC_URL="grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}"
 
 LEAF1_HOST=leaf1.example
 LEAF1_DATA=/var/lib/kaspa-leaf1-20bps
@@ -193,7 +217,7 @@ kaspad \
   --devnet \
   --override-params-file "$OVERRIDE_FILE" \
   --listen "0.0.0.0:16111" \
-  --rpclisten "127.0.0.1:16110" \
+  --rpclisten "0.0.0.0:${BOOTSTRAP_RPC_PUBLIC_PORT}" \
   --utxoindex \
   --perf-metrics \
   --perf-metrics-interval-sec=1 \
@@ -207,6 +231,7 @@ Checks:
 - no immediate override-params error
 - no immediate consensus mismatch error
 - node listens on the expected P2P and RPC ports
+- public bootstrap RPC is protected by the configured WAN allowlist rather than by an SSH tunnel
 
 ## Step 3. Start Miner Warmup On The Bootstrap Side
 
@@ -337,6 +362,34 @@ Use the tuned devnet-support / workspace txgen build that already includes:
 - separate startup/runtime RPC timeout handling
 - large-wallet refresh tuning
 - mempool backpressure controls
+
+Helper connectivity rule:
+
+- point helper miner and txgen directly at `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
+- do not introduce a local forward such as `127.0.0.1:26610`
+
+Example helper miner launch:
+
+```bash
+RPC_HOST="$BOOTSTRAP_RPC_PUBLIC_HOST" \
+RPC_PORT="$BOOTSTRAP_RPC_PUBLIC_PORT" \
+MINER_THREADS="$HELPER_MINER_THREADS" \
+~/node-bps-scaling/bin/remote-miner-helper.sh start
+```
+
+Example helper txgen launch:
+
+```bash
+Tx_gen \
+  --net devnet \
+  --rpc-url "$HELPER_BOOTSTRAP_RPC_URL" \
+  --tps 6000 \
+  --client-pool-size 8 \
+  --max-inflight 6000 \
+  --mempool-high-watermark 650000 \
+  --mempool-resume-watermark 450000 \
+  --timeout-cooldown-ms 2000
+```
 
 Baseline launch checks:
 

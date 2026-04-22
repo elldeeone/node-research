@@ -7,8 +7,8 @@ ENV_FILE="${BASE_DIR}/remote-miner-wallet.env"
 LOG_DIR="${BASE_DIR}/logs"
 LOG_FILE="${LOG_DIR}/remote-miner-wallet.log"
 PID_FILE="${BASE_DIR}/remote-miner-wallet.pid"
-RPC_HOST="${RPC_HOST:-127.0.0.1}"
-RPC_PORT="${RPC_PORT:-26610}"
+RPC_HOST="${RPC_HOST:-}"
+RPC_PORT="${RPC_PORT:-16110}"
 MINER_THREADS="${MINER_THREADS:-1}"
 
 usage() {
@@ -19,14 +19,21 @@ Usage:
   remote-miner-helper.sh status
 
 Environment:
-  RPC_HOST        bootstrap RPC host reachable from this helper (default: 127.0.0.1)
-  RPC_PORT        bootstrap RPC port reachable from this helper (default: 26610)
+  RPC_HOST        bootstrap public RPC host reachable from this helper (required)
+  RPC_PORT        bootstrap public RPC port reachable from this helper (default: 16110)
   MINER_THREADS   miner thread count (default: 1)
 
 Required env file:
   ~/node-bps-scaling/remote-miner-wallet.env
   with MINER_ADDRESS=<address>
 EOF
+}
+
+require_rpc_target() {
+  if [[ -z "${RPC_HOST}" ]]; then
+    echo "RPC_HOST is required; point it at the bootstrap public IP or DNS name" >&2
+    exit 1
+  fi
 }
 
 require_env() {
@@ -47,6 +54,7 @@ is_running() {
 }
 
 start() {
+  require_rpc_target
   require_env
   mkdir -p "${LOG_DIR}"
   if [[ ! -x "${BIN_PATH}" ]]; then

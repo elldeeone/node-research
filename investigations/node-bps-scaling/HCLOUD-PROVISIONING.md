@@ -48,6 +48,20 @@ Create a dedicated Hetzner private network for this investigation:
 
 Using a private network keeps bootstrap-relay-leaf traffic explicit and easier to reason about.
 
+## Bootstrap Public RPC
+
+The helper host on your WAN should reach the bootstrap directly over the public internet.
+
+That means the bootstrap needs two things from the beginning:
+
+- `kaspad` gRPC listening on `0.0.0.0:16110`
+- a bootstrap-only firewall that allows:
+  - SSH from your WAN CIDR
+  - gRPC from your WAN CIDR
+  - P2P from the Hetzner private network
+
+This is the preferred path for the `10.0.4.10` helper host. Do not rely on an ad hoc SSH tunnel for the official run path.
+
 ## Provisioning Profiles
 
 The helper script supports these scenario profiles:
@@ -96,7 +110,8 @@ Dry run:
 ```bash
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
-  --profile calibration
+  --profile calibration \
+  --bootstrap-wan-cidr YOUR_WAN_CIDR
 ```
 
 Real create:
@@ -105,8 +120,23 @@ Real create:
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile calibration \
+  --bootstrap-wan-cidr YOUR_WAN_CIDR \
   --apply
 ```
+
+`YOUR_WAN_CIDR` should usually be your current public IPv4 with a host mask such as `203.0.113.10/32`.
+
+The helper script will create and attach a managed firewall named like:
+
+- `nbs-20bps-bootstrap-public-rpc`
+
+and will allow:
+
+- TCP `22` from `YOUR_WAN_CIDR`
+- TCP `16110` from `YOUR_WAN_CIDR`
+- TCP `16111` from the Hetzner private network CIDR
+
+If your WAN CIDR changes later, delete that managed firewall or rerun the helper with a different `--bootstrap-firewall-name` so the allowlist is rebuilt cleanly.
 
 Later, when tx generation is already live and you are ready for the downstream smoke:
 

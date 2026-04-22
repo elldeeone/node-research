@@ -21,6 +21,8 @@ Defaults:
   --network-range 10.80.0.0/16
   --subnet-range 10.80.0.0/24
   --network-zone eu-central
+  --bootstrap-rpc-port 16110
+  --bootstrap-p2p-port 16111
 
 Profiles:
   baseline     bootstrap + relay
@@ -47,6 +49,10 @@ Flags:
   --network-range CIDR
   --subnet-range CIDR
   --network-zone NAME
+  --bootstrap-wan-cidr CIDR      allowlist this WAN CIDR to reach bootstrap SSH and gRPC
+  --bootstrap-rpc-port PORT      bootstrap public gRPC port to allowlist (default: 16110)
+  --bootstrap-p2p-port PORT      bootstrap P2P port to allow from the Hetzner private network (default: 16111)
+  --bootstrap-firewall-name NAME override the managed bootstrap firewall name
   -h, --help
 EOF
 }
@@ -58,6 +64,24 @@ fail() {
 
 note() {
   printf 'hcloud-provision: %s\n' "$*"
+}
+
+bootstrap_firewall_name_for_tier() {
+  local tier="$1"
+  printf 'nbs-%s-bootstrap-public-rpc\n' "$tier"
+}
+
+profile_includes_bootstrap() {
+  local profile="$1"
+
+  case "$profile" in
+    baseline|calibration|single|eight)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
 }
 
 run_or_print() {
@@ -109,6 +133,10 @@ NETWORK_NAME="node-bps-scaling"
 NETWORK_RANGE="10.80.0.0/16"
 SUBNET_RANGE="10.80.0.0/24"
 NETWORK_ZONE="eu-central"
+BOOTSTRAP_WAN_CIDR=""
+BOOTSTRAP_RPC_PORT="16110"
+BOOTSTRAP_P2P_PORT="16111"
+BOOTSTRAP_FIREWALL_NAME=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -160,6 +188,22 @@ while [[ $# -gt 0 ]]; do
       NETWORK_ZONE="${2:-}"
       shift 2
       ;;
+    --bootstrap-wan-cidr)
+      BOOTSTRAP_WAN_CIDR="${2:-}"
+      shift 2
+      ;;
+    --bootstrap-rpc-port)
+      BOOTSTRAP_RPC_PORT="${2:-}"
+      shift 2
+      ;;
+    --bootstrap-p2p-port)
+      BOOTSTRAP_P2P_PORT="${2:-}"
+      shift 2
+      ;;
+    --bootstrap-firewall-name)
+      BOOTSTRAP_FIREWALL_NAME="${2:-}"
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -182,6 +226,10 @@ if [[ "$MODE" == "plan" && "$APPLY" -eq 1 ]]; then
   fail "--apply is only valid with --mode create or --mode destroy"
 fi
 
+if [[ -z "$BOOTSTRAP_FIREWALL_NAME" ]]; then
+  BOOTSTRAP_FIREWALL_NAME="$(bootstrap_firewall_name_for_tier "$TIER")"
+fi
+
 SERVERS=()
 while IFS= read -r line; do
   SERVERS+=("$line")
@@ -195,6 +243,9 @@ if [[ "$MODE" == "destroy" ]]; then
   for name in "${SERVERS[@]}"; do
     run_or_print hcloud server delete "$name"
   done
+  if [[ -n "$BOOTSTRAP_WAN_CIDR" ]] && profile_includes_bootstrap "$PROFILE"; then
+    run_or_print hcloud firewall delete "$BOOTSTRAP_FIREWALL_NAME"
+  fi
   exit 0
 fi
 
@@ -217,6 +268,46 @@ if [[ "$NETWORK_EXISTS" -eq 0 ]]; then
     --ip-range "$SUBNET_RANGE"
 fi
 
+if [[ -n "$BOOTSTRAP_WAN_CIDR" ]] && profile_includes_bootstrap "$PROFILE"; then
+  if hcloud firewall describe "$BOOTSTRAP_FIREWALL_NAME" >/dev/null 2>&1; then
+    note "bootstrap firewall already exists, skipping create: $BOOTSTRAP_FIREWALL_NAME"
+  else
+    run_or_print \
+      hcloud firewall create \
+      --name "$BOOTSTRAP_FIREWALL_NAME" \
+      --label "investigation=node-bps-scaling" \
+      --label "tier=$TIER" \
+      --label "role=bootstrap-firewall"
+
+    run_or_print \
+      hcloud firewall add-rule \
+      --description "admin ssh from allowlisted WAN" \
+      --direction in \
+      --source-ips "$BOOTSTRAP_WAN_CIDR" \
+      --protocol tcp \
+      --port 22 \
+      "$BOOTSTRAP_FIREWALL_NAME"
+
+    run_or_print \
+      hcloud firewall add-rule \
+      --description "bootstrap gRPC from allowlisted WAN" \
+      --direction in \
+      --source-ips "$BOOTSTRAP_WAN_CIDR" \
+      --protocol tcp \
+      --port "$BOOTSTRAP_RPC_PORT" \
+      "$BOOTSTRAP_FIREWALL_NAME"
+
+    run_or_print \
+      hcloud firewall add-rule \
+      --description "bootstrap P2P from Hetzner private network" \
+      --direction in \
+      --source-ips "$NETWORK_RANGE" \
+      --protocol tcp \
+      --port "$BOOTSTRAP_P2P_PORT" \
+      "$BOOTSTRAP_FIREWALL_NAME"
+  fi
+fi
+
 for name in "${SERVERS[@]}"; do
   role="${name##*-}"
   if [[ "$name" == *"bootstrap"* ]]; then
@@ -229,19 +320,33 @@ for name in "${SERVERS[@]}"; do
 
   if hcloud server describe "$name" >/dev/null 2>&1; then
     note "server already exists, skipping create: $name"
+    if [[ -n "$BOOTSTRAP_WAN_CIDR" && "$role" == "bootstrap" ]]; then
+      run_or_print \
+        hcloud firewall apply-to-resource \
+        --type server \
+        --server "$name" \
+        "$BOOTSTRAP_FIREWALL_NAME"
+    fi
     continue
   fi
 
-  run_or_print \
-    hcloud server create \
-    --name "$name" \
-    --type "$SERVER_TYPE" \
-    --image "$IMAGE" \
-    --location "$LOCATION" \
-    --ssh-key "$SSH_KEY" \
-    --network "$NETWORK_NAME" \
-    --label "investigation=node-bps-scaling" \
-    --label "tier=$TIER" \
-    --label "profile=$PROFILE" \
+  create_cmd=(
+    hcloud server create
+    --name "$name"
+    --type "$SERVER_TYPE"
+    --image "$IMAGE"
+    --location "$LOCATION"
+    --ssh-key "$SSH_KEY"
+    --network "$NETWORK_NAME"
+    --label "investigation=node-bps-scaling"
+    --label "tier=$TIER"
+    --label "profile=$PROFILE"
     --label "role=$role"
+  )
+
+  if [[ -n "$BOOTSTRAP_WAN_CIDR" && "$role" == "bootstrap" ]]; then
+    create_cmd+=(--firewall "$BOOTSTRAP_FIREWALL_NAME")
+  fi
+
+  run_or_print "${create_cmd[@]}"
 done
