@@ -52,26 +52,29 @@ The current canonical `20 BPS` profile is:
 - txgen wallet: `Wallet B`
 - mining wallet: `Wallet A`
 - txgen backpressure flags:
-  - `--max-inflight 6000`
-  - `--client-pool-size 8`
+  - `--client-pool-size 32`
+  - `--max-inflight 3000`
   - `--mempool-high-watermark 650000`
   - `--mempool-resume-watermark 450000`
-  - `--timeout-cooldown-ms 2000`
+  - `--rpc-timeout-ms 15000`
+  - `--timeout-cooldown-ms 1000`
+  - `--timeout-cooldown-threshold 64`
 
 Observed outcome from the best current calibration pass:
 
-- bootstrap: `19.84 BPS`
-- relay: `19.83 BPS`
-- helper txgen remained in the intended `~6k TPS` submit band without timeout growth
-- bootstrap RSS max: `4.79 GiB`
-- relay RSS max: `3.24 GiB`
-- no relay OOM
+- helper-to-bootstrap public RTT: about `283 ms`
+- txgen startup on `Wallet B` requires about `60-120s` before the steady-state load is representative
+- steady-state bootstrap sample after a `120s` txgen warm-up held `19.45 BPS` and `5989.8 TPS` over `10 minutes`
+- the shorter startup-inclusive probe looked artificially poor (`4778.3 TPS` over `5 minutes`) because it included the large-wallet scan/ramp window
+- no sustained timeout storm occurred during the steady-state validation window
 
 Interpretation:
 
 - txgen uses mempool backpressure rather than brute-force submit storms
+- a large-wallet helper on the direct public-RPC path needs materially more gRPC concurrency and a longer runtime timeout than the earlier tunnel-era profile
 - the node keeps processing backlog while txgen is paused at the high watermark
-- the clean public-IP, service-based topology needed an in-between miner profile rather than the earlier integer-only `2 + 1`
+- the clean public-IP, service-based topology needed both the helper miner quota and the retuned helper txgen path
+- judge TPS only after the helper txgen warm-up period has completed
 - the first proper `Baseline` run should reuse this exact profile unless a new blocker appears
 
 ## Inputs
@@ -381,11 +384,13 @@ Official active-load profile:
 Locked txgen flag set:
 
 - `--tps 6000`
-- `--client-pool-size 8`
-- `--max-inflight 6000`
+- `--client-pool-size 32`
+- `--max-inflight 3000`
 - `--mempool-high-watermark 650000`
 - `--mempool-resume-watermark 450000`
-- `--timeout-cooldown-ms 2000`
+- `--rpc-timeout-ms 15000`
+- `--timeout-cooldown-ms 1000`
+- `--timeout-cooldown-threshold 64`
 
 Use the tuned devnet-support / workspace txgen build that already includes:
 
@@ -393,6 +398,7 @@ Use the tuned devnet-support / workspace txgen build that already includes:
 - separate startup/runtime RPC timeout handling
 - large-wallet refresh tuning
 - mempool backpressure controls
+- timeout-burst gating so a single late response does not immediately trigger cooldown
 
 Helper connectivity rule:
 
@@ -423,12 +429,20 @@ Tx_gen \
   --net devnet \
   --rpc-url "$HELPER_BOOTSTRAP_RPC_URL" \
   --tps 6000 \
-  --client-pool-size 8 \
-  --max-inflight 6000 \
+  --client-pool-size 32 \
+  --max-inflight 3000 \
   --mempool-high-watermark 650000 \
   --mempool-resume-watermark 450000 \
-  --timeout-cooldown-ms 2000
+  --rpc-timeout-ms 15000 \
+  --timeout-cooldown-ms 1000 \
+  --timeout-cooldown-threshold 64
 ```
+
+Steady-state validation rule:
+
+- do not grade the helper txgen profile on the first `60-120s` after service start
+- on the large `Wallet B` path, that window is dominated by startup wallet-scan / ramp behavior
+- begin TPS judgement only after txgen is clearly in steady-state
 
 Baseline launch checks:
 
