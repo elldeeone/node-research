@@ -56,35 +56,42 @@ For a brand-new devnet, do not start the tx generator immediately.
 
 Recommended wallet flow:
 
-- `Wallet A`: initial bootstrap mining wallet, later handed over to tx generation
-- `Wallet B`: ongoing miner wallet after the handoff
+- `Wallet A`: primary tx generation wallet; mine into it until it reaches the desired mature-UTXO band
+- `Wallet B`: parking wallet for ongoing mining whenever `Wallet A` is reserved for tx generation
 
 Recommended sequence:
 
 1. start the bootstrap node
 2. generate `Wallet A`
 3. point the miner at `Wallet A`
-4. leave tx generation off for at least two hours while `Wallet A` accumulates mature coinbase UTXOs
+4. leave tx generation off while `Wallet A` accumulates mature coinbase UTXOs
 5. once `Wallet A` reaches the chosen mature-UTXO threshold, stop the miner
 6. switch the miner to `Wallet B`
 7. start tx generation from `Wallet A`
+8. if `Wallet A` later needs more runway, stop tx generation, point the miner back at `Wallet A`, top it back up into band, then switch mining back to `Wallet B`
 
 Practical sizing note for `20 BPS`:
 
 - miner-only warmup creates about one new coinbase UTXO per block
 - `20 BPS` for two hours is about `144,000` blocks total
 - after coinbase maturity, that gives a roughly `120k-140k` mature-UTXO staging window
-- this is a better first-pass target than a one-hour warmup because it leaves meaningful headroom above the txgen default inventory floor
+- that is enough for an initial smoke check, but it is not the preferred steady-state handoff target for this calibration
 
 This lines up closely with the current modified `Tx_gen` default inventory rule:
 
 - `target_utxo_count = target_tps * 10`
 - at `6,000 TPS`, the default target inventory is `60,000` UTXOs
 
-If you want a larger txgen inventory than miner-only warmup can provide in the desired time window:
+Preferred handoff band for this investigation:
 
-- either extend the miner-only warmup beyond the two-hour minimum
-- or hand `Wallet A` to `Tx_gen` in `--prepare-only` mode first, with an explicit larger `--target-utxo-count`, then start the real spam run after preparation finishes
+- use `Wallet A` for tx generation only after it reaches roughly `300k-500k` mature UTXOs
+- if it starts below that band, mine into `Wallet A` longer before the first cutover
+- if it falls back below that band later, pause tx generation and top `Wallet A` back up by temporarily mining into it again
+
+Operational preference:
+
+- prefer controlled miner top-ups into `Wallet A` over large `Tx_gen --prepare-only` expansion stages
+- avoid promoting a very large long-running mining wallet directly into tx generation duty without first checking wallet-scan latency
 
 ## Variables
 
@@ -175,6 +182,7 @@ Calibration checks:
 - observed chain growth matches the intended tier closely enough
 - mature UTXO inventory on `Wallet A` grows toward the chosen handoff threshold
 - miner-only warmup lasts at least two hours before the first txgen handoff
+- `Wallet A` is brought into the preferred `300k-500k` mature-UTXO band before the proper txgen run
 
 Do not create a new txgen path for this study unless the old one is unusable. Reuse the known-good workflow and record the exact commands you used in calibration notes.
 
@@ -188,14 +196,16 @@ Once the chosen `Wallet A` threshold is reached:
 
 For `20 BPS` calibration, the default handoff policy is:
 
-- mine to `Wallet A` for at least two hours before the cutover
-- expect roughly `120k-140k` mature UTXOs on `Wallet A` at handoff time
-- treat that as the minimum staging target before starting tx generation
+- mine to `Wallet A` for at least two hours before the first cutover
+- treat roughly `120k-140k` mature UTXOs as a minimum smoke-test threshold, not the preferred run threshold
+- do not start the proper txgen calibration until `Wallet A` is in the `300k-500k` mature-UTXO band
 
-If you want to test a larger starting inventory such as `200k-300k` UTXOs:
+If `Wallet A` is below the preferred band:
 
-- mine materially longer before the handoff
-- or run `Tx_gen --prepare-only` against `Wallet A` after the handoff until the larger target is reached
+- keep mining into `Wallet A` longer before the first handoff
+- or, after a later spam attempt drains it, switch mining back onto `Wallet A` until it returns to band
+
+Do not assume that the current miner wallet is automatically the best txgen wallet. A wallet that has been mined into for a very long time may become slow to scan and awkward for txgen startup.
 
 ## Step 5. Start The Relay
 
@@ -258,14 +268,20 @@ After the miner handoff is complete and the relay capture is live, start tx gene
 
 Recommended approach:
 
-- first calibration pass: use the current default txgen inventory target for `6,000 TPS`, which is `60,000` UTXOs, but only after the two-hour miner warmup and wallet handoff
-- larger-inventory pass: if needed, run an explicit `--prepare-only --target-utxo-count <N>` stage before the live spam phase
+- use the current `6,000 TPS` txgen profile, but only after `Wallet A` has been staged into the `300k-500k` mature-UTXO band
+- if a spam pass materially depletes `Wallet A`, stop tx generation and top it back up by mining into `Wallet A` again before the next pass
 
 Calibration checks:
 
 - intended tx generation rate is actually attempted
 - bootstrap remains healthy while mining continues to `Wallet B`
 - relay remains healthy while bootstrap load is active
+
+Optional calibration lever if accepted block rate sags under txgen load:
+
+- add a second miner on the helper host while keeping the bootstrap miner running locally
+- use this only as a calibration experiment to see whether accepted BPS stays nearer the intended tier under txgen pressure
+- record clearly whether the run used one miner or two, because this changes how the tier should be interpreted
 
 Only after these checks look healthy should you provision the downstream leaf.
 
