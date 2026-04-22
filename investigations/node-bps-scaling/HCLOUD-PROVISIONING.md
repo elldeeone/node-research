@@ -9,7 +9,23 @@ Verified from the active `hcloud` CLI context:
 - preferred server type available: `cpx42`
 - preferred image available: `ubuntu-24.04`
 - SSH key present: `luke-mbp-id-ed25519`
-- no private network currently exists in the project
+
+## Topology Direction
+
+This investigation now treats public IPs as the primary node-to-node path.
+
+That means:
+
+- helper `10.0.4.10` talks directly to the bootstrap public IP
+- relay talks to bootstrap via bootstrap public IP
+- leaves talk to relay via relay public IP
+- no SSH tunnel is part of the intended run path
+- the Hetzner private network is optional and off by default
+
+The reason for this change is operational simplicity. Every server already has a public IP, so the cleanest model is:
+
+- your WAN IP for operator access
+- explicit peer allowlists between bootstrap, relay, and leaves
 
 ## Why Mirror The Earlier Layout
 
@@ -20,8 +36,6 @@ To minimise accidental topology drift, this investigation should mirror that as 
 - bootstrap: `cpx42`
 - relay: `cpx42`
 - leaves: `cpx42`
-
-This is not the cheapest possible layout, but it is the cleanest continuity with the prior successful setup.
 
 ## Recommended Naming
 
@@ -36,31 +50,37 @@ Use short names that encode both tier and role:
 
 Where `nbs` means `node-bps-scaling`.
 
-## Recommended Private Network
+## Managed Firewall Model
 
-Create a dedicated Hetzner private network for this investigation:
+The provisioning helper now manages four firewall layers per tier:
 
-- network name: `node-bps-scaling`
-- IP range: `10.80.0.0/16`
-- subnet type: `cloud`
-- network zone: `eu-central`
-- subnet range: `10.80.0.0/24`
+- `nbs-<tier>-admin-wan`
+  - attached to every server
+  - allows all TCP, all UDP, and ICMP from your WAN CIDR
+- `nbs-<tier>-bootstrap-peers`
+  - attached only to bootstrap
+  - allows relay public IP to reach bootstrap P2P
+- `nbs-<tier>-relay-peers`
+  - attached only to relay
+  - allows bootstrap public IP and leaf public IPs to reach relay P2P
+- `nbs-<tier>-leaf-peers`
+  - attached only to leaves
+  - allows relay public IP to reach leaf P2P
 
-Using a private network keeps bootstrap-relay-leaf traffic explicit and easier to reason about.
+This gives us a clean rule matrix:
 
-## Bootstrap Public RPC
+- operator access: your WAN only
+- bootstrap node traffic: relay only
+- relay node traffic: bootstrap + leaves
+- leaf node traffic: relay only
 
-The helper host on your WAN should reach the bootstrap directly over the public internet.
+## Operator WAN CIDR
 
-That means the bootstrap needs two things from the beginning:
+The current operator WAN CIDR for this investigation is:
 
-- `kaspad` gRPC listening on `0.0.0.0:16110`
-- a bootstrap-only firewall that allows:
-  - SSH from your WAN CIDR
-  - gRPC from your WAN CIDR
-  - P2P from the Hetzner private network
+- `87.121.72.51/32`
 
-This is the preferred path for the `10.0.4.10` helper host. Do not rely on an ad hoc SSH tunnel for the official run path.
+If that changes, rerun provisioning with the new CIDR so the managed admin firewall is rebuilt with the new source IP.
 
 ## Provisioning Profiles
 
@@ -82,7 +102,9 @@ The intended live sequence is staged:
 - provision `calibration` first so only bootstrap + relay are billable during miner warmup
 - provision `leaf1` later, only after tx generation is already running and the downstream smoke test is about to begin
 
-The helper now skips creating any server that already exists, so rerunning it with a larger profile is safe for incremental expansion.
+The helper skips creating any server that already exists, and on `--apply` it rebuilds the managed firewalls from the currently existing tier servers' public IPs.
+
+That means adding a new leaf later also refreshes the relay and leaf allowlists.
 
 ## Safety
 
@@ -94,15 +116,6 @@ It does not create billable servers unless you pass:
 --apply
 ```
 
-## First Live Hetzner Step
-
-For the first live infra pass, use:
-
-- tier: `20bps`
-- profile: `calibration`
-
-That provisions only the machines needed for the bootstrap warmup and relay validation window, without paying for an idle downstream leaf during txgen staging.
-
 ## Suggested First Command
 
 Dry run:
@@ -111,7 +124,7 @@ Dry run:
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile calibration \
-  --bootstrap-wan-cidr YOUR_WAN_CIDR
+  --admin-wan-cidr 87.121.72.51/32
 ```
 
 Real create:
@@ -120,23 +133,9 @@ Real create:
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile calibration \
-  --bootstrap-wan-cidr YOUR_WAN_CIDR \
+  --admin-wan-cidr 87.121.72.51/32 \
   --apply
 ```
-
-`YOUR_WAN_CIDR` should usually be your current public IPv4 with a host mask such as `203.0.113.10/32`.
-
-The helper script will create and attach a managed firewall named like:
-
-- `nbs-20bps-bootstrap-public-rpc`
-
-and will allow:
-
-- TCP `22` from `YOUR_WAN_CIDR`
-- TCP `16110` from `YOUR_WAN_CIDR`
-- TCP `16111` from the Hetzner private network CIDR
-
-If your WAN CIDR changes later, delete that managed firewall or rerun the helper with a different `--bootstrap-firewall-name` so the allowlist is rebuilt cleanly.
 
 Later, when tx generation is already live and you are ready for the downstream smoke:
 
@@ -144,8 +143,24 @@ Later, when tx generation is already live and you are ready for the downstream s
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile leaf1 \
+  --admin-wan-cidr 87.121.72.51/32 \
   --apply
 ```
+
+## Optional Private Network
+
+If you still want the Hetzner private network attached for convenience, you can opt into it explicitly:
+
+```bash
+investigations/node-bps-scaling/scripts/hcloud-provision.sh \
+  --tier 20bps \
+  --profile calibration \
+  --admin-wan-cidr 87.121.72.51/32 \
+  --with-private-network \
+  --apply
+```
+
+That private network is no longer part of the required run path.
 
 ## Teardown
 

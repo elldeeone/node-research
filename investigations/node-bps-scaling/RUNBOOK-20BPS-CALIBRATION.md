@@ -75,29 +75,31 @@ Interpretation:
   - `20bps` in `investigations/node-bps-scaling/data/manifests/tier-validation-register.csv`
 - optional Hetzner provisioning helper:
   - initial bootstrap + relay only:
-    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration --bootstrap-wan-cidr "$BOOTSTRAP_WAN_CIDR"`
+    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile calibration --admin-wan-cidr "$ADMIN_WAN_CIDR"`
   - later leaf-only add-on:
-    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile leaf1`
+    - `investigations/node-bps-scaling/scripts/hcloud-provision.sh --tier 20bps --profile leaf1 --admin-wan-cidr "$ADMIN_WAN_CIDR"`
 
-## Bootstrap Public RPC Policy
+## Public-IP Peer Policy
 
-The helper host on your WAN must reach the bootstrap directly over the public internet.
+Every server in this investigation uses its public IP as the primary transport path.
 
 Do not depend on an ad hoc SSH tunnel for the official run path.
 
-The intended setup is:
+The intended rule matrix is:
 
-- bootstrap `kaspad` listens for gRPC on `0.0.0.0:16110`
-- Hetzner firewall rules allow that gRPC port only from your WAN CIDR
-- the same allowlist can also gate SSH to the bootstrap
-- relay and leaves still use the Hetzner private network for node-to-node traffic
+- your WAN CIDR gets full operator access to every server
+- bootstrap accepts node traffic only from the relay public IP
+- relay accepts node traffic only from the bootstrap public IP and leaf public IPs
+- each leaf accepts node traffic only from the relay public IP
 
 Operational rule:
 
 - helper `10.0.4.10` talks to `grpc://$BOOTSTRAP_RPC_PUBLIC_HOST:$BOOTSTRAP_RPC_PUBLIC_PORT`
-- bootstrap and relay local collectors still use loopback RPC on their own hosts
+- relay points to bootstrap public P2P
+- leaves point to relay public P2P
+- bootstrap, relay, and leaves may still use local loopback RPC for local collectors if desired
 - no SSH tunnel is part of the baseline runbook
-- if your WAN CIDR changes, rebuild the managed bootstrap firewall before the next run
+- if your WAN CIDR changes, rerun provisioning so the managed firewalls are rebuilt cleanly
 
 ## Assumptions
 
@@ -160,26 +162,26 @@ TIER_SLUG=20bps
 TIER_LABEL="20 BPS"
 OVERRIDE_FILE=/absolute/path/to/20bps.override.json
 
-BOOTSTRAP_HOST=bootstrap.example
-BOOTSTRAP_P2P=${BOOTSTRAP_HOST}:16111
+BOOTSTRAP_PUBLIC_HOST=bootstrap-public-ip.example
+BOOTSTRAP_P2P=${BOOTSTRAP_PUBLIC_HOST}:16111
 BOOTSTRAP_RPC_LOCAL=127.0.0.1:16110
-BOOTSTRAP_RPC_PUBLIC_HOST=bootstrap-public-ip.example
+BOOTSTRAP_RPC_PUBLIC_HOST=${BOOTSTRAP_PUBLIC_HOST}
 BOOTSTRAP_RPC_PUBLIC_PORT=16110
-BOOTSTRAP_WAN_CIDR=203.0.113.10/32
+ADMIN_WAN_CIDR=87.121.72.51/32
 BOOTSTRAP_DATA=/var/lib/kaspa-bootstrap-20bps
 BOOTSTRAP_MINER_THREADS_ACTIVE=2
 BOOTSTRAP_MINER_THREADS_STANDBY=3
 
-RELAY_HOST=relay.example
-RELAY_P2P=${RELAY_HOST}:16111
-RELAY_RPC=127.0.0.1:16110
+RELAY_PUBLIC_HOST=relay-public-ip.example
+RELAY_P2P=${RELAY_PUBLIC_HOST}:16111
+RELAY_RPC_LOCAL=127.0.0.1:16110
 RELAY_DATA=/var/lib/kaspa-relay-20bps
 
 HELPER_HOST=10.0.4.10
 HELPER_MINER_THREADS=1
 HELPER_BOOTSTRAP_RPC_URL="grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}"
 
-LEAF1_HOST=leaf1.example
+LEAF1_PUBLIC_HOST=leaf1-public-ip.example
 LEAF1_DATA=/var/lib/kaspa-leaf1-20bps
 ```
 
@@ -231,7 +233,8 @@ Checks:
 - no immediate override-params error
 - no immediate consensus mismatch error
 - node listens on the expected P2P and RPC ports
-- public bootstrap RPC is protected by the configured WAN allowlist rather than by an SSH tunnel
+- bootstrap is reachable directly from the helper WAN path rather than by an SSH tunnel
+- inbound access is limited by the managed firewalls rather than by private-network assumptions
 
 ## Step 3. Start Miner Warmup On The Bootstrap Side
 
@@ -290,7 +293,7 @@ kaspad \
   --override-params-file "$OVERRIDE_FILE" \
   --addpeer "$BOOTSTRAP_P2P" \
   --listen "0.0.0.0:16111" \
-  --rpclisten "127.0.0.1:16110" \
+  --rpclisten "0.0.0.0:16110" \
   --utxoindex \
   --perf-metrics \
   --perf-metrics-interval-sec=1 \
@@ -301,9 +304,10 @@ kaspad \
 Checks:
 
 - relay starts cleanly against the same override file
-- relay connects to bootstrap
+- relay connects to bootstrap over the bootstrap public IP
 - relay reaches and holds sync
 - relay does not show immediate storage-path distress
+- relay is reachable from your WAN while node ingress remains limited to bootstrap and leaf peers
 
 ## Step 6. Start The Relay Capture
 
@@ -314,11 +318,11 @@ shared/collectors/run-capture.sh \
   --run-id "tier-20-calibration-relay-$(date -u +%Y-%m-%dT%H-%M-%SZ)" \
   --run-state "tier-calibration" \
   --network "devnet" \
-  --rpc-url "grpc://127.0.0.1:16110" \
+  --rpc-url "grpc://${RELAY_RPC_LOCAL}" \
   --data-dir "$RELAY_DATA" \
   --duration-sec 1800 \
   --provider "hetzner" \
-  --instance-name "$RELAY_HOST" \
+  --instance-name "$RELAY_PUBLIC_HOST" \
   --load-source "custom-devnet" \
   --traffic-shape "scaled synthetic load" \
   --payload-profile "same-as-prior-devnet-when-possible" \
@@ -409,6 +413,7 @@ If you are using Hetzner, provision the leaf only at this point:
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile leaf1 \
+  --admin-wan-cidr "$ADMIN_WAN_CIDR" \
   --apply
 ```
 
@@ -419,7 +424,7 @@ kaspad \
   --devnet \
   --override-params-file "$OVERRIDE_FILE" \
   --connect "$RELAY_P2P" \
-  --rpclisten "127.0.0.1:16110" \
+  --rpclisten "0.0.0.0:16110" \
   --utxoindex \
   --perf-metrics \
   --perf-metrics-interval-sec=1 \
@@ -429,9 +434,10 @@ kaspad \
 
 Checks:
 
-- leaf attaches only to the relay
+- leaf attaches only to the relay public IP
 - leaf begins syncing normally
 - relay remains healthy while serving the leaf
+- leaf ingress remains limited to your WAN and the relay public IP
 
 This is only a smoke test for the calibration tier. Full downstream runs come later.
 
