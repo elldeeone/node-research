@@ -1,0 +1,15 @@
+[Unit]
+Description=Kaspa bootstrap miner
+After=network-online.target kaspa-bootstrap-20bps.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/opt/node-bps-scaling/secrets/bootstrap-miner.env
+ExecStart=/opt/node-bps-scaling/bin/kaspa-miner-musl --mine-when-not-synced --mining-address ${MINER_ADDRESS} -s ${RPC_HOST} -p ${RPC_PORT} -t ${MINER_THREADS} --altlogs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -8,7 +8,7 @@ LOG_DIR="${BASE_DIR}/logs"
 LOG_FILE="${LOG_DIR}/remote-miner-wallet.log"
 PID_FILE="${BASE_DIR}/remote-miner-wallet.pid"
 RPC_HOST="${RPC_HOST:-}"
-RPC_PORT="${RPC_PORT:-16110}"
+RPC_PORT="${RPC_PORT:-16610}"
 MINER_THREADS="${MINER_THREADS:-1}"
 
 usage() {
@@ -20,7 +20,7 @@ Usage:
 
 Environment:
   RPC_HOST        bootstrap public RPC host reachable from this helper (required)
-  RPC_PORT        bootstrap public RPC port reachable from this helper (default: 16110)
+  RPC_PORT        bootstrap public RPC port reachable from this helper (default: 16610)
   MINER_THREADS   miner thread count (default: 1)
 
 Required env file:

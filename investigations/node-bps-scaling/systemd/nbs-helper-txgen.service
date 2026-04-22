@@ -1,0 +1,16 @@
+[Unit]
+Description=Node BPS scaling helper txgen
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+EnvironmentFile=/home/ubuntu/node-bps-scaling/bootstrap-endpoint.env
+EnvironmentFile=/home/ubuntu/node-bps-scaling/txgen-wallet.env
+ExecStart=/home/ubuntu/node-bps-scaling/bin/Tx_gen --net devnet --rpc-url grpc://${BOOTSTRAP_RPC_HOST}:${BOOTSTRAP_RPC_PORT} --private-key ${TX_GEN_PRIVATE_KEY} --tps 6000 --client-pool-size 8 --max-inflight 6000 --mempool-high-watermark 650000 --mempool-resume-watermark 450000 --timeout-cooldown-ms 2000 --rpc-timeout-ms 5000 --startup-rpc-timeout-ms 300000 --coinbase-maturity 2000
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

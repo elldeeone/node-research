@@ -1,0 +1,16 @@
+[Unit]
+Description=Kaspa bootstrap 20bps devnet node
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/opt/node-bps-scaling/secrets/kaspa-bootstrap-20bps.env
+ExecStart=/opt/node-bps-scaling/rusty-kaspa/target/release/kaspad --yes --devnet --override-params-file=${OVERRIDE_FILE} --enable-unsynced-mining --utxoindex --disable-upnp --nodnsseed --perf-metrics --perf-metrics-interval-sec=1 --loglevel=info,kaspad_lib::daemon=debug,kaspa_mining::monitor=debug --appdir=${APPDIR} --listen=0.0.0.0:${P2P_PORT} --rpclisten=0.0.0.0:${RPC_PORT} ${KASPAD_EXTRA_ARGS}
+Restart=always
+RestartSec=5
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target

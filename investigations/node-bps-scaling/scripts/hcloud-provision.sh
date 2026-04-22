@@ -18,8 +18,8 @@ Defaults:
   --image ubuntu-24.04
   --ssh-key luke-mbp-id-ed25519
   --admin-wan-cidr required
-  --bootstrap-rpc-port 16110
-  --node-p2p-port 16111
+  --bootstrap-rpc-port 16610
+  --node-p2p-port 16611
   --without-private-network
 
 Profiles:
@@ -44,8 +44,8 @@ Flags:
   --image NAME
   --ssh-key NAME
   --admin-wan-cidr CIDR           allowlist this WAN CIDR to reach every server
-  --bootstrap-rpc-port PORT       bootstrap public gRPC port (default: 16110)
-  --node-p2p-port PORT            node P2P port shared by bootstrap/relay/leaves (default: 16111)
+  --bootstrap-rpc-port PORT       bootstrap public gRPC port (default: 16610)
+  --node-p2p-port PORT            node P2P port shared by bootstrap/relay/leaves (default: 16611)
   --bootstrap-firewall-name NAME  override managed bootstrap peer firewall name
   --relay-firewall-name NAME      override managed relay peer firewall name
   --leaf-firewall-name NAME       override managed leaf peer firewall name
@@ -427,8 +427,8 @@ SERVER_TYPE="cpx42"
 IMAGE="ubuntu-24.04"
 SSH_KEY="luke-mbp-id-ed25519"
 ADMIN_WAN_CIDR=""
-BOOTSTRAP_RPC_PORT="16110"
-NODE_P2P_PORT="16111"
+BOOTSTRAP_RPC_PORT="16610"
+NODE_P2P_PORT="16611"
 WITH_PRIVATE_NETWORK=0
 NETWORK_NAME="node-bps-scaling"
 NETWORK_RANGE="10.80.0.0/16"

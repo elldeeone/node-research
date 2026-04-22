@@ -28,6 +28,12 @@ Current status:
 - the relay baseline can start on the locked profile below
 - downstream smoke is still pending and should be completed before `Single-Downstream` and `Eight-Downstream`
 
+Operational preference:
+
+- bootstrap, relay, helper miner, and helper txgen should run as `systemd` services
+- do not rely on long-lived `nohup` shells for the official run path
+- preserve the bootstrap DB across service restarts
+
 Recommended calibration shape:
 
 - bootstrap and relay both use the same `20bps.override.json`
@@ -163,18 +169,18 @@ TIER_LABEL="20 BPS"
 OVERRIDE_FILE=/absolute/path/to/20bps.override.json
 
 BOOTSTRAP_PUBLIC_HOST=bootstrap-public-ip.example
-BOOTSTRAP_P2P=${BOOTSTRAP_PUBLIC_HOST}:16111
-BOOTSTRAP_RPC_LOCAL=127.0.0.1:16110
+BOOTSTRAP_P2P=${BOOTSTRAP_PUBLIC_HOST}:16611
+BOOTSTRAP_RPC_LOCAL=127.0.0.1:16610
 BOOTSTRAP_RPC_PUBLIC_HOST=${BOOTSTRAP_PUBLIC_HOST}
-BOOTSTRAP_RPC_PUBLIC_PORT=16110
+BOOTSTRAP_RPC_PUBLIC_PORT=16610
 ADMIN_WAN_CIDR=87.121.72.51/32
 BOOTSTRAP_DATA=/var/lib/kaspa-bootstrap-20bps
 BOOTSTRAP_MINER_THREADS_ACTIVE=2
 BOOTSTRAP_MINER_THREADS_STANDBY=3
 
 RELAY_PUBLIC_HOST=relay-public-ip.example
-RELAY_P2P=${RELAY_PUBLIC_HOST}:16111
-RELAY_RPC_LOCAL=127.0.0.1:16110
+RELAY_P2P=${RELAY_PUBLIC_HOST}:16611
+RELAY_RPC_LOCAL=127.0.0.1:16610
 RELAY_DATA=/var/lib/kaspa-relay-20bps
 
 HELPER_HOST=10.0.4.10
@@ -212,13 +218,23 @@ Record the deployed path in your notes so the later capture metadata can refer t
 
 ## Step 2. Start The Bootstrap
 
+Preferred method:
+
+- install [kaspa-bootstrap-20bps.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/kaspa-bootstrap-20bps.service)
+- install [kaspa-bootstrap-miner.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/kaspa-bootstrap-miner.service)
+- create the env files described in [systemd/README.md](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/README.md)
+- run `systemctl daemon-reload`
+- enable the node service first, then the miner service
+
+Reference one-shot launch:
+
 Launch the bootstrap node with the custom tier file and the monitoring flags:
 
 ```bash
 kaspad \
   --devnet \
   --override-params-file "$OVERRIDE_FILE" \
-  --listen "0.0.0.0:16111" \
+  --listen "0.0.0.0:16611" \
   --rpclisten "0.0.0.0:${BOOTSTRAP_RPC_PUBLIC_PORT}" \
   --utxoindex \
   --perf-metrics \
@@ -285,6 +301,16 @@ Do not assume that the current miner wallet is automatically the best txgen wall
 
 ## Step 5. Start The Relay
 
+Preferred method:
+
+- install [kaspa-relay-20bps.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/kaspa-relay-20bps.service)
+- create the relay env file described in [systemd/README.md](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/README.md)
+- point `BOOTSTRAP_P2P` at the bootstrap public IP on `16611`
+- run `systemctl daemon-reload`
+- enable and start the relay service
+
+Reference one-shot launch:
+
 Launch the relay so it keeps the bootstrap as an upstream peer while still serving downstream peers later:
 
 ```bash
@@ -292,8 +318,8 @@ kaspad \
   --devnet \
   --override-params-file "$OVERRIDE_FILE" \
   --addpeer "$BOOTSTRAP_P2P" \
-  --listen "0.0.0.0:16111" \
-  --rpclisten "0.0.0.0:16110" \
+  --listen "0.0.0.0:16611" \
+  --rpclisten "0.0.0.0:16610" \
   --utxoindex \
   --perf-metrics \
   --perf-metrics-interval-sec=1 \
@@ -372,6 +398,14 @@ Helper connectivity rule:
 - point helper miner and txgen directly at `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
 - do not introduce a local forward such as `127.0.0.1:26610`
 
+Preferred method:
+
+- install [nbs-helper-miner.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/nbs-helper-miner.service)
+- install [nbs-helper-txgen.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/nbs-helper-txgen.service)
+- create `bootstrap-endpoint.env`, `remote-miner-wallet.env`, and `txgen-wallet.env` as described in [systemd/README.md](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/README.md)
+- enable helper miner by default
+- leave helper txgen installed but stopped until the active load window begins
+
 Example helper miner launch:
 
 ```bash
@@ -424,7 +458,7 @@ kaspad \
   --devnet \
   --override-params-file "$OVERRIDE_FILE" \
   --connect "$RELAY_P2P" \
-  --rpclisten "0.0.0.0:16110" \
+  --rpclisten "0.0.0.0:16610" \
   --utxoindex \
   --perf-metrics \
   --perf-metrics-interval-sec=1 \

@@ -1,0 +1,16 @@
+[Unit]
+Description=Node BPS scaling helper miner
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+EnvironmentFile=/home/ubuntu/node-bps-scaling/bootstrap-endpoint.env
+EnvironmentFile=/home/ubuntu/node-bps-scaling/remote-miner-wallet.env
+ExecStart=/home/ubuntu/kaspa-miner-musl --mine-when-not-synced --mining-address ${MINER_ADDRESS} -s ${BOOTSTRAP_RPC_HOST} -p ${BOOTSTRAP_RPC_PORT} -t ${MINER_THREADS} --altlogs
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

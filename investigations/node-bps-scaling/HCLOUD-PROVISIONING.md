@@ -27,6 +27,13 @@ The reason for this change is operational simplicity. Every server already has a
 - your WAN IP for operator access
 - explicit peer allowlists between bootstrap, relay, and leaves
 
+The service layer should mirror that same simplicity:
+
+- bootstrap node and bootstrap miner run as `systemd` services
+- relay runs as a `systemd` service
+- helper miner and helper txgen run as `systemd` services
+- SSH tunnels are not part of the supported topology
+
 ## Why Mirror The Earlier Layout
 
 The earlier investigation metadata shows that the relay and downstream leaves were all Hetzner `CPX42`-class nodes in `hel1`.
@@ -161,6 +168,15 @@ investigations/node-bps-scaling/scripts/hcloud-provision.sh \
 ```
 
 That private network is no longer part of the required run path.
+
+## Live Port Convention
+
+The current live `20bps` devnet uses:
+
+- bootstrap public gRPC: `16610`
+- node P2P between bootstrap, relay, and leaves: `16611`
+
+The helper defaults and managed peer firewalls should match those live ports.
 
 ## Teardown
 
