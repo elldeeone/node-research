@@ -1,0 +1,15 @@
+[Unit]
+Description=Kaspa bootstrap txgen
+After=network-online.target kaspa-bootstrap-20bps.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+EnvironmentFile=/opt/node-bps-scaling/secrets/bootstrap-txgen.env
+ExecStart=/opt/node-bps-scaling/bin/Tx_gen --net devnet --rpc-url grpc://${RPC_HOST}:${RPC_PORT} --private-key ${TX_GEN_PRIVATE_KEY} --tps ${TXGEN_TPS} --client-pool-size ${TXGEN_CLIENT_POOL_SIZE} --max-inflight ${TXGEN_MAX_INFLIGHT} --mempool-high-watermark ${TXGEN_MEMPOOL_HIGH_WATERMARK} --mempool-resume-watermark ${TXGEN_MEMPOOL_RESUME_WATERMARK} --rpc-timeout-ms ${TXGEN_RPC_TIMEOUT_MS} --startup-rpc-timeout-ms ${TXGEN_STARTUP_RPC_TIMEOUT_MS} --coinbase-maturity ${TXGEN_COINBASE_MATURITY} --timeout-cooldown-ms ${TXGEN_TIMEOUT_COOLDOWN_MS} --timeout-cooldown-threshold ${TXGEN_TIMEOUT_COOLDOWN_THRESHOLD}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -16,7 +16,7 @@ This investigation now treats public IPs as the primary node-to-node path.
 
 That means:
 
-- helper `10.0.4.10` talks directly to the bootstrap public IP
+- helper `10.0.4.10` talks directly to the bootstrap public IP for supplementary mining only
 - relay talks to bootstrap via bootstrap public IP
 - leaves talk to relay via relay public IP
 - no SSH tunnel is part of the intended run path
@@ -30,8 +30,9 @@ The reason for this change is operational simplicity. Every server already has a
 The service layer should mirror that same simplicity:
 
 - bootstrap node and bootstrap miner run as `systemd` services
+- bootstrap txgen runs as a `systemd` service on bootstrap
 - relay runs as a `systemd` service
-- helper miner and helper txgen run as `systemd` services
+- helper miner runs as a `systemd` service
 - SSH tunnels are not part of the supported topology
 
 ## Why Mirror The Earlier Layout

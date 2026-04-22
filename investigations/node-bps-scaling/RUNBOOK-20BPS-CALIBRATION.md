@@ -30,7 +30,7 @@ Current status:
 
 Operational preference:
 
-- bootstrap, relay, helper miner, and helper txgen should run as `systemd` services
+- bootstrap, relay, bootstrap txgen, and helper miner should run as `systemd` services
 - do not rely on long-lived `nohup` shells for the official run path
 - preserve the bootstrap DB across service restarts
 
@@ -47,8 +47,8 @@ Recommended calibration shape:
 The current canonical `20 BPS` profile is:
 
 - bootstrap miner: `-t 2` during active load windows
+- bootstrap txgen: local to the bootstrap host via `127.0.0.1:16610`
 - helper miner on `10.0.4.10`: `-t 1` with `CPUQuota=60%`
-- txgen host: `10.0.4.10`
 - txgen wallet: `Wallet B`
 - mining wallet: `Wallet A`
 - txgen backpressure flags:
@@ -62,20 +62,21 @@ The current canonical `20 BPS` profile is:
 
 Observed outcome from the best current calibration pass:
 
-- helper-to-bootstrap public RTT: about `283 ms`
-- txgen startup on `Wallet B` requires about `60-120s` before the steady-state load is representative
-- steady-state bootstrap sample after a `120s` txgen warm-up held `19.45 BPS` and `5989.8 TPS` over `10 minutes`
-- the shorter startup-inclusive probe looked artificially poor (`4778.3 TPS` over `5 minutes`) because it included the large-wallet scan/ramp window
-- no sustained timeout storm occurred during the steady-state validation window
+- bootstrap-local txgen now validates the intended final topology
+- startup-inclusive `120s` sample: `19.37 BPS`, `5113.0 TPS`
+- after `30s` in that startup window: `19.32 BPS`, `5950.6 TPS`
+- steady-state `10 minute` sample: `19.82 BPS`, `6105.5 TPS`
+- txgen startup on `Wallet B` still needs roughly `30-60s` before the steady-state load is representative
+- helper miner remains part of the profile, but helper-host txgen is no longer part of the launch model
 
 Interpretation:
 
 - txgen uses mempool backpressure rather than brute-force submit storms
-- a large-wallet helper on the direct public-RPC path needs materially more gRPC concurrency and a longer runtime timeout than the earlier tunnel-era profile
 - the node keeps processing backlog while txgen is paused at the high watermark
-- the clean public-IP, service-based topology needed both the helper miner quota and the retuned helper txgen path
-- judge TPS only after the helper txgen warm-up period has completed
-- the first proper `Baseline` run should reuse this exact profile unless a new blocker appears
+- the helper miner quota remains part of the intended topology because supplementary off-box mining helped stabilise cadence in the earlier work
+- judge TPS only after the bootstrap-local txgen warm-up period has completed
+- do not reuse the earlier helper-host txgen layout for the official baseline run
+- the bootstrap-local path now satisfies the `>= 5.5k TPS` floor and tracks essentially at the `6k TPS` target in steady-state
 
 ## Inputs
 
@@ -104,7 +105,8 @@ The intended rule matrix is:
 
 Operational rule:
 
-- helper `10.0.4.10` talks to `grpc://$BOOTSTRAP_RPC_PUBLIC_HOST:$BOOTSTRAP_RPC_PUBLIC_PORT`
+- bootstrap-local txgen talks to `grpc://127.0.0.1:16610`
+- helper miner on `10.0.4.10` talks to `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
 - relay points to bootstrap public P2P
 - leaves point to relay public P2P
 - bootstrap, relay, and leaves may still use local loopback RPC for local collectors if desired
@@ -189,7 +191,6 @@ RELAY_DATA=/var/lib/kaspa-relay-20bps
 
 HELPER_HOST=10.0.4.10
 HELPER_MINER_THREADS=1
-HELPER_BOOTSTRAP_RPC_URL="grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}"
 
 LEAF1_PUBLIC_HOST=leaf1-public-ip.example
 LEAF1_DATA=/var/lib/kaspa-leaf1-20bps
@@ -376,8 +377,8 @@ After the wallet handoff is complete and the relay capture is live, start the lo
 Official active-load profile:
 
 - bootstrap miner at `-t 2`
+- bootstrap txgen on the bootstrap host
 - helper miner on `10.0.4.10` at `-t 1` with `CPUQuota=60%`
-- txgen on `10.0.4.10`
 - txgen from `Wallet B`
 - mining to `Wallet A`
 
@@ -402,16 +403,17 @@ Use the tuned devnet-support / workspace txgen build that already includes:
 
 Helper connectivity rule:
 
-- point helper miner and txgen directly at `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
+- point the helper miner directly at `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
+- run txgen locally on bootstrap against `grpc://127.0.0.1:${BOOTSTRAP_RPC_PUBLIC_PORT}`
 - do not introduce a local forward such as `127.0.0.1:26610`
 
 Preferred method:
 
 - install [nbs-helper-miner.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/nbs-helper-miner.service)
-- install [nbs-helper-txgen.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/nbs-helper-txgen.service)
-- create `bootstrap-endpoint.env`, `remote-miner-wallet.env`, and `txgen-wallet.env` as described in [systemd/README.md](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/README.md)
+- install [kaspa-bootstrap-txgen.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/kaspa-bootstrap-txgen.service)
+- create `bootstrap-endpoint.env`, `remote-miner-wallet.env`, and `bootstrap-txgen.env` as described in [systemd/README.md](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/README.md)
 - enable helper miner by default
-- leave helper txgen installed but stopped until the active load window begins
+- leave bootstrap txgen installed but stopped until the active load window begins
 
 Example helper miner launch:
 
@@ -422,12 +424,12 @@ MINER_THREADS="$HELPER_MINER_THREADS" \
 ~/node-bps-scaling/bin/remote-miner-helper.sh start
 ```
 
-Example helper txgen launch:
+Example bootstrap txgen launch:
 
 ```bash
 Tx_gen \
   --net devnet \
-  --rpc-url "$HELPER_BOOTSTRAP_RPC_URL" \
+  --rpc-url "grpc://127.0.0.1:${BOOTSTRAP_RPC_PUBLIC_PORT}" \
   --tps 6000 \
   --client-pool-size 32 \
   --max-inflight 3000 \
@@ -440,7 +442,7 @@ Tx_gen \
 
 Steady-state validation rule:
 
-- do not grade the helper txgen profile on the first `60-120s` after service start
+- do not grade the bootstrap-local txgen profile on the first `60-120s` after service start
 - on the large `Wallet B` path, that window is dominated by startup wallet-scan / ramp behavior
 - begin TPS judgement only after txgen is clearly in steady-state
 

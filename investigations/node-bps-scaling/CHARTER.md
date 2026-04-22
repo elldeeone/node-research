@@ -36,9 +36,9 @@ How do CPU, memory, storage, and network requirements change as BPS rises when o
 
 ### Roles
 
-- `Bootstrap`: hosts the custom devnet and primary local miner
+- `Bootstrap`: hosts the custom devnet, primary local miner, and tx generation
 - `Relay`: the node under test on the `CPX42` reference host
-- `Helpers`: optional off-box miner and tx generation hosts used when needed to hold tier cadence without turning the bootstrap into the dominant bottleneck
+- `Helpers`: optional off-box supplementary miners used when needed to stabilise tier cadence without overcomplicating the bootstrap role
 - `Leaves`: downstream nodes that sync only from the relay during downstream scenarios
 
 ### Why This Topology
@@ -46,7 +46,7 @@ How do CPU, memory, storage, and network requirements change as BPS rises when o
 - it produced the cleanest evidence in the earlier work
 - it reduced ambiguity caused by mixing bootstrap duty and measured serving duty
 - it gives the relay a fair chance to show its own scaling behavior
-- the validated `20 BPS` profile already showed that off-box helpers can be the cleaner way to hold the target tier than overloading the bootstrap host itself
+- the validated `20 BPS` work showed that supplementary off-box mining can help stabilise the tier cadence
 
 ## Tier Ladder
 
@@ -147,21 +147,40 @@ Each tier requires a short calibration phase that confirms:
 - the relay can sync and stay current
 - downstream leaves can attach and sync in the downstream scenarios
 
-For `20 BPS`, the current locked calibration outcome is:
+For `20 BPS`, the current intended topology is:
 
 - bootstrap local miner at `-t 2`
-- helper miner at `-t 1`
-- tx generation on `10.0.4.10`
+- bootstrap-local tx generation
+- supplementary helper miner on `10.0.4.10` at `-t 1`
 - txgen wallet `Wallet B`
 - mining wallet `Wallet A`
-- txgen backpressure profile:
-  - `--max-inflight 6000`
-  - `--client-pool-size 8`
+
+Important note:
+
+- an earlier direct public-RPC helper-txgen pass was useful as a diagnostic and did show that the steady-state load path can hold about `6k TPS`
+- it is not the final intended topology
+- bootstrap-local txgen is now the validated canonical path for the next `20 BPS` official baseline launch
+
+Current validated `20 BPS` launch profile:
+
+- bootstrap miner at `-t 2`
+- bootstrap-local txgen against `grpc://127.0.0.1:16610`
+- supplementary helper miner on `10.0.4.10` at `-t 1` with `CPUQuota=60%`
+- txgen wallet `Wallet B`
+- mining wallet `Wallet A`
+- txgen flags:
+  - `--client-pool-size 32`
+  - `--max-inflight 3000`
   - `--mempool-high-watermark 650000`
   - `--mempool-resume-watermark 450000`
-  - `--timeout-cooldown-ms 2000`
+  - `--rpc-timeout-ms 15000`
+  - `--timeout-cooldown-ms 1000`
+  - `--timeout-cooldown-threshold 64`
 
-That profile is baseline-ready and should be treated as the canonical starting point for the first proper `20 BPS Baseline` run.
+Validation result on the intended topology:
+
+- startup-inclusive `120s` sample: `19.37 BPS`, `5113.0 TPS`
+- steady-state `10 minute` sample: `19.82 BPS`, `6105.5 TPS`
 
 ## Run Order
 
