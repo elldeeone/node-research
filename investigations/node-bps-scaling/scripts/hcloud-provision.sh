@@ -24,6 +24,7 @@ Defaults:
 
 Profiles:
   baseline     bootstrap + relay
+  txgen1       dedicated txgen host only
   leaf1        leaf1 only
   single       bootstrap + relay + leaf1
   eight        bootstrap + relay + leaf1..leaf8
@@ -86,6 +87,9 @@ server_names_for_profile() {
     baseline|calibration)
       printf '%s\n' "nbs-${tier}-bootstrap-01" "nbs-${tier}-relay-01"
       ;;
+    txgen1)
+      printf '%s\n' "nbs-${tier}-txgen-01"
+      ;;
     leaf1)
       printf '%s\n' "nbs-${tier}-leaf-01"
       ;;
@@ -109,7 +113,7 @@ all_tier_server_names() {
   local tier="$1"
   local i
 
-  printf '%s\n' "nbs-${tier}-bootstrap-01" "nbs-${tier}-relay-01"
+  printf '%s\n' "nbs-${tier}-bootstrap-01" "nbs-${tier}-relay-01" "nbs-${tier}-txgen-01"
   for i in $(seq 1 8); do
     printf 'nbs-%s-leaf-%02d\n' "$tier" "$i"
   done
@@ -165,6 +169,8 @@ role_from_server_name() {
     printf 'bootstrap\n'
   elif [[ "$name" == *"relay"* ]]; then
     printf 'relay\n'
+  elif [[ "$name" == *"txgen"* ]]; then
+    printf 'txgen\n'
   else
     printf 'leaf\n'
   fi
@@ -277,6 +283,7 @@ configure_bootstrap_firewall() {
   local name="$1"
   local bootstrap_name="$2"
   local relay_ip="$3"
+  local txgen_ip="$4"
 
   recreate_managed_firewall "$name" "bootstrap-firewall" "$bootstrap_name"
 
@@ -288,6 +295,17 @@ configure_bootstrap_firewall() {
       --source-ips "${relay_ip}/32" \
       --protocol tcp \
       --port "$NODE_P2P_PORT" \
+      "$name"
+  fi
+
+  if [[ -n "$txgen_ip" ]]; then
+    run_or_print \
+      hcloud firewall add-rule \
+      --description "dedicated txgen grpc to bootstrap" \
+      --direction in \
+      --source-ips "${txgen_ip}/32" \
+      --protocol tcp \
+      --port "$BOOTSTRAP_RPC_PORT" \
       "$name"
   fi
 
@@ -362,8 +380,10 @@ reconcile_firewalls() {
   local existing_leaves=()
   local bootstrap_name=""
   local relay_name=""
+  local txgen_name=""
   local bootstrap_ip=""
   local relay_ip=""
+  local txgen_ip=""
   local leaf_ips=()
   local name
   local role
@@ -380,6 +400,10 @@ reconcile_firewalls() {
         relay_name="$name"
         relay_ip="$(server_public_ipv4 "$name")"
         ;;
+      txgen)
+        txgen_name="$name"
+        txgen_ip="$(server_public_ipv4 "$name")"
+        ;;
       leaf)
         existing_leaves+=("$name")
         leaf_ips+=("$(server_public_ipv4 "$name")")
@@ -395,7 +419,7 @@ reconcile_firewalls() {
   configure_admin_firewall "$ADMIN_FIREWALL_NAME" "${existing_servers[@]}"
 
   if [[ -n "$bootstrap_name" ]]; then
-    configure_bootstrap_firewall "$BOOTSTRAP_FIREWALL_NAME" "$bootstrap_name" "$relay_ip"
+    configure_bootstrap_firewall "$BOOTSTRAP_FIREWALL_NAME" "$bootstrap_name" "$relay_ip" "$txgen_ip"
   fi
 
   if [[ -n "$relay_name" ]]; then
@@ -576,10 +600,18 @@ if [[ "$MODE" == "destroy" ]]; then
   for name in "${SERVERS[@]}"; do
     run_or_print hcloud server delete "$name"
   done
-  delete_firewall_if_exists "$LEAF_FIREWALL_NAME"
-  delete_firewall_if_exists "$RELAY_FIREWALL_NAME"
-  delete_firewall_if_exists "$BOOTSTRAP_FIREWALL_NAME"
-  delete_firewall_if_exists "$ADMIN_FIREWALL_NAME"
+  if [[ "$APPLY" -eq 1 ]]; then
+    if [[ -n "$(existing_tier_server_names "$TIER")" ]]; then
+      reconcile_firewalls
+    else
+      delete_firewall_if_exists "$LEAF_FIREWALL_NAME"
+      delete_firewall_if_exists "$RELAY_FIREWALL_NAME"
+      delete_firewall_if_exists "$BOOTSTRAP_FIREWALL_NAME"
+      delete_firewall_if_exists "$ADMIN_FIREWALL_NAME"
+    fi
+  else
+    note "destroy plan only; firewalls would be reconciled after server deletion"
+  fi
   exit 0
 fi
 

@@ -30,9 +30,9 @@ The reason for this change is operational simplicity. Every server already has a
 The service layer should mirror that same simplicity:
 
 - bootstrap node and bootstrap miner run as `systemd` services
-- bootstrap txgen runs as a `systemd` service on bootstrap
 - relay runs as a `systemd` service
 - helper miner runs as a `systemd` service
+- dedicated txgen runs as a `systemd` service on its own Hetzner host
 - SSH tunnels are not part of the supported topology
 
 ## Why Mirror The Earlier Layout
@@ -43,6 +43,7 @@ To minimise accidental topology drift, this investigation should mirror that as 
 
 - bootstrap: `cpx42`
 - relay: `cpx42`
+- dedicated txgen: `cx33`
 - leaves: `cpx42`
 
 ## Recommended Naming
@@ -51,6 +52,7 @@ Use short names that encode both tier and role:
 
 - bootstrap: `nbs-20bps-bootstrap-01`
 - relay: `nbs-20bps-relay-01`
+- txgen: `nbs-20bps-txgen-01`
 - leaf 1: `nbs-20bps-leaf-01`
 - leaf 2: `nbs-20bps-leaf-02`
 - ...
@@ -68,6 +70,7 @@ The provisioning helper now manages four firewall layers per tier:
 - `nbs-<tier>-bootstrap-peers`
   - attached only to bootstrap
   - allows relay public IP to reach bootstrap P2P
+  - allows dedicated txgen host public IP to reach bootstrap gRPC
 - `nbs-<tier>-relay-peers`
   - attached only to relay
   - allows bootstrap public IP and leaf public IPs to reach relay P2P
@@ -96,6 +99,8 @@ The helper script supports these scenario profiles:
 
 - `baseline`
   - bootstrap + relay
+- `txgen1`
+  - dedicated txgen host only
 - `leaf1`
   - leaf1 only
 - `single`
@@ -108,6 +113,7 @@ The helper script supports these scenario profiles:
 The intended live sequence is staged:
 
 - provision `calibration` first so only bootstrap + relay are billable during miner warmup
+- provision `txgen1` next for the dedicated txgen host
 - provision `leaf1` later, only after tx generation is already running and the downstream smoke test is about to begin
 
 The helper skips creating any server that already exists, and on `--apply` it rebuilds the managed firewalls from the currently existing tier servers' public IPs.
@@ -141,6 +147,17 @@ Real create:
 investigations/node-bps-scaling/scripts/hcloud-provision.sh \
   --tier 20bps \
   --profile calibration \
+  --admin-wan-cidr 87.121.72.51/32 \
+  --apply
+```
+
+Dedicated txgen host create:
+
+```bash
+investigations/node-bps-scaling/scripts/hcloud-provision.sh \
+  --tier 20bps \
+  --profile txgen1 \
+  --type cx33 \
   --admin-wan-cidr 87.121.72.51/32 \
   --apply
 ```

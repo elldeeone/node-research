@@ -36,8 +36,9 @@ How do CPU, memory, storage, and network requirements change as BPS rises when o
 
 ### Roles
 
-- `Bootstrap`: hosts the custom devnet, primary local miner, and tx generation
+- `Bootstrap`: hosts the custom devnet and primary local miner
 - `Relay`: the node under test on the `CPX42` reference host
+- `Txgen Host`: dedicated off-box tx generation host when bootstrap-local txgen proves operationally fragile
 - `Helpers`: optional off-box supplementary miners used when needed to stabilise tier cadence without overcomplicating the bootstrap role
 - `Leaves`: downstream nodes that sync only from the relay during downstream scenarios
 
@@ -147,24 +148,25 @@ Each tier requires a short calibration phase that confirms:
 - the relay can sync and stay current
 - downstream leaves can attach and sync in the downstream scenarios
 
-For `20 BPS`, the current intended topology is:
+For `20 BPS`, the next intended topology is:
 
 - bootstrap local miner at `-t 2`
-- bootstrap-local tx generation
+- dedicated txgen host in `hel1`
 - supplementary helper miner on `10.0.4.10` at `-t 1`
 - txgen wallet `Wallet B`
 - mining wallet `Wallet A`
 
 Important note:
 
-- an earlier direct public-RPC helper-txgen pass was useful as a diagnostic and did show that the steady-state load path can hold about `6k TPS`
-- it is not the final intended topology
-- bootstrap-local txgen is now the validated canonical path for the next `20 BPS` official baseline launch
+- helper-host txgen was useful as a diagnostic and did show that the control loop could hold about `6k TPS`
+- bootstrap-local txgen later proved the target band can be reached on the intended load shape
+- but the first long baseline attempt failed because bootstrap `kaspad + txgen` memory pressure caused an OOM and restart cascade
+- the dedicated-txgen-host revision is now the next candidate topology for the official `20 BPS` baseline launch
 
-Current validated `20 BPS` launch profile:
+Current next-candidate `20 BPS` launch profile:
 
 - bootstrap miner at `-t 2`
-- bootstrap-local txgen against `grpc://127.0.0.1:16610`
+- dedicated txgen host against bootstrap public gRPC
 - supplementary helper miner on `10.0.4.10` at `-t 1` with `CPUQuota=60%`
 - txgen wallet `Wallet B`
 - mining wallet `Wallet A`
@@ -177,10 +179,11 @@ Current validated `20 BPS` launch profile:
   - `--timeout-cooldown-ms 1000`
   - `--timeout-cooldown-threshold 64`
 
-Validation result on the intended topology:
+Most recent lesson from the aborted bootstrap-local topology:
 
 - startup-inclusive `120s` sample: `19.37 BPS`, `5113.0 TPS`
 - steady-state `10 minute` sample: `19.82 BPS`, `6105.5 TPS`
+- long-baseline durability failed due to bootstrap memory exhaustion
 
 ## Run Order
 
