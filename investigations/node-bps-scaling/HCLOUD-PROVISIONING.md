@@ -16,7 +16,7 @@ This investigation now treats public IPs as the primary node-to-node path.
 
 That means:
 
-- helper `10.0.4.10` talks directly to the bootstrap public IP for supplementary mining only
+- supplementary miner host `10.0.4.30` talks directly to the bootstrap public IP for mining only
 - relay talks to bootstrap via bootstrap public IP
 - leaves talk to relay via relay public IP
 - no SSH tunnel is part of the intended run path

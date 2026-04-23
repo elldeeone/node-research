@@ -48,7 +48,7 @@ The next candidate `20 BPS` profile is:
 
 - bootstrap miner: `-t 2` during active load windows
 - dedicated txgen host in `hel1`
-- helper miner on `10.0.4.10`: `-t 1` with `CPUQuota=60%`
+- supplementary miner on `10.0.4.30`: `-t 1` with `CPUQuota=25%`
 - txgen wallet: `Wallet B`
 - mining wallet: `Wallet A`
 - txgen backpressure flags:
@@ -104,7 +104,7 @@ The intended rule matrix is:
 Operational rule:
 
 - dedicated txgen host talks to bootstrap public gRPC on `16610`
-- helper miner on `10.0.4.10` talks to `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
+- supplementary miner on `10.0.4.30` talks to `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
 - relay points to bootstrap public P2P
 - leaves point to relay public P2P
 - bootstrap, relay, and leaves may still use local loopback RPC for local collectors if desired
@@ -187,7 +187,7 @@ RELAY_P2P=${RELAY_PUBLIC_HOST}:16611
 RELAY_RPC_LOCAL=127.0.0.1:16610
 RELAY_DATA=/var/lib/kaspa-relay-20bps
 
-HELPER_HOST=10.0.4.10
+HELPER_HOST=10.0.4.30
 HELPER_MINER_THREADS=1
 
 LEAF1_PUBLIC_HOST=leaf1-public-ip.example
@@ -376,7 +376,7 @@ Official active-load profile:
 
 - bootstrap miner at `-t 2`
 - dedicated txgen host in `hel1`
-- helper miner on `10.0.4.10` at `-t 1` with `CPUQuota=60%`
+- supplementary miner on `10.0.4.30` at `-t 1` with `CPUQuota=25%`
 - txgen from `Wallet B`
 - mining to `Wallet A`
 
@@ -401,7 +401,7 @@ Use the tuned devnet-support / workspace txgen build that already includes:
 
 Helper connectivity rule:
 
-- point the helper miner directly at `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
+- point the supplementary miner directly at `grpc://${BOOTSTRAP_RPC_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
 - run txgen on the dedicated host against `grpc://${BOOTSTRAP_PUBLIC_HOST}:${BOOTSTRAP_RPC_PUBLIC_PORT}`
 - do not introduce a local forward such as `127.0.0.1:26610`
 
@@ -410,7 +410,7 @@ Preferred method:
 - install [nbs-helper-miner.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/nbs-helper-miner.service)
 - install [nbs-txgen-host.service](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/nbs-txgen-host.service)
 - create `bootstrap-endpoint.env`, `remote-miner-wallet.env`, and `txgen-wallet.env` as described in [systemd/README.md](/Users/luke/Projects/node-research/investigations/node-bps-scaling/systemd/README.md)
-- enable helper miner by default
+- enable the supplementary miner by default
 - leave the dedicated txgen service installed but stopped until the active load window begins
 
 Example helper miner launch:

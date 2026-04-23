@@ -14,9 +14,9 @@ The intended operating model is:
 - bootstrap RPC is public on `16610`
 - bootstrap, relay, and leaves talk over public P2P on `16611`
 - bootstrap hosts the primary miner only
-- helper host `10.0.4.10` contributes supplementary mining only
+- helper host `10.0.4.30` contributes supplementary mining only
 - dedicated txgen runs on a separate Hetzner host
-- helper miner remains capped with `CPUQuota=60%`
+- helper miner remains capped with `CPUQuota=25%`
 - txgen is installed on the dedicated host as a service and only started during active load windows
 
 ## Expected Env Files

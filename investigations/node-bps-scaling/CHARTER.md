@@ -152,7 +152,7 @@ For `20 BPS`, the next intended topology is:
 
 - bootstrap local miner at `-t 2`
 - dedicated txgen host in `hel1`
-- supplementary helper miner on `10.0.4.10` at `-t 1`
+- supplementary helper miner on `10.0.4.30` at `-t 1`
 - txgen wallet `Wallet B`
 - mining wallet `Wallet A`
 
@@ -167,7 +167,7 @@ Current next-candidate `20 BPS` launch profile:
 
 - bootstrap miner at `-t 2`
 - dedicated txgen host against bootstrap public gRPC
-- supplementary helper miner on `10.0.4.10` at `-t 1` with `CPUQuota=60%`
+- supplementary helper miner on `10.0.4.30` at `-t 1` with `CPUQuota=25%`
 - txgen wallet `Wallet B`
 - mining wallet `Wallet A`
 - txgen flags:
